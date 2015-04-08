@@ -14,6 +14,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 find_package(CXX11 REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS}")
 
-#TODO: set up LLVM & Clang for linking
+find_package(LLVM REQUIRED CONFIG)
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+
+find_package(CLANG REQUIRED CONFIG)
+message(STATUS "Found Clang")
+message(STATUS "Using ClangConfig.cmake in: ${CLANG_DIR}")
 
 add_subdirectory(src)
