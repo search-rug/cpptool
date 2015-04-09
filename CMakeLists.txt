@@ -22,4 +22,11 @@ find_package(CLANG REQUIRED CONFIG)
 message(STATUS "Found Clang")
 message(STATUS "Using ClangConfig.cmake in: ${CLANG_DIR}")
 
+include_directories(SYSTEM ${LLVM_INCLUDE_DIRS})
+add_definitions(${LLVM_DEFINITIONS})
+
+if( APPLE )
+  add_definitions(-fno-rtti -fvisibility=hidden)
+endif( APPLE )
+
 add_subdirectory(src)

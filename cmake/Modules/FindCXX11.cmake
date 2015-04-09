@@ -20,12 +20,12 @@ if(MSVC)
         )
 else()
     set(CXX11_FLAG_CANDIDATES
-        #gcc
-        "-std=gnu++11"
-        "-std=gnu++0x"
         #Gnu and Intel Linux
         "-std=c++11"
         "-std=c++0x"
+        #gcc
+        "-std=gnu++11"
+        "-std=gnu++0x"
         #Microsoft Visual Studio, and everything that automatically accepts C++11
         " "
         #Intel windows
