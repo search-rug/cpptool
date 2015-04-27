@@ -18,4 +18,10 @@ namespace ct {
     clang::CompilerInstance const &RuntimeContext::getCompilationInstance() const {
         return compilationInstance;
     }
+
+    RuntimeContext::RuntimeContext(RuntimeContext &&orig)
+            : exportInterface(std::move(orig.exportInterface)),
+              compilationInstance(orig.compilationInstance) {
+
+    }
 }

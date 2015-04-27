@@ -16,6 +16,8 @@ namespace ct {
                 clang::CompilerInstance const &compilationInstance
         );
 
+        RuntimeContext(RuntimeContext &&orig);
+
         CTExport const &export() const;
 
         clang::ASTContext const &context() const;

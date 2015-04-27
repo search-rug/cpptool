@@ -11,7 +11,7 @@ namespace ct {
     class PrimaryVisitor : public clang::RecursiveASTVisitor<PrimaryVisitor> {
         RuntimeContext context;
     public:
-        PrimaryVisitor(RuntimeContext context);
+        PrimaryVisitor(RuntimeContext &&context);
 
         bool VisitTagDecl(clang::TagDecl *D);
     };
