@@ -4,6 +4,9 @@ set(SRCS
 
     dump_export.cpp
     dump_export.hpp
+
+    export_util.cpp
+    export_util.hpp
     )
 
 add_library(export STATIC ${SRCS})
