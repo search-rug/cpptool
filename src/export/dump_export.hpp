@@ -12,7 +12,6 @@ namespace ct {
         std::unique_ptr<llvm::raw_ostream> out;
     public:
         DumpExport(std::ostream &out);
-		~DumpExport();
 
         virtual void exportTagDecl(const clang::DeclContext *context, const clang::TagDecl *tag) const override;
     };

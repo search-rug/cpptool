@@ -14,11 +14,7 @@ std::unique_ptr<ct::CTExport> createExportObject(llvm::StringRef fileName) {
 }
 
 int main(int argc, const char *argv[]) {
-    //clang::tooling::CommonOptionsParser options(argc, argv, toolCat);
-    //clang::tooling::ClangTool tool(options.getCompilations(), options.getSourcePathList());
-
-	auto action = ct::buildActionFactory(&createExportObject).get()->create();
-	clang::tooling::runToolOnCode(action, argv[1]);
-
-    //return tool.run(ct::buildActionFactory(&createExportObject).get());
+    clang::tooling::CommonOptionsParser options(argc, argv, toolCat);
+    clang::tooling::ClangTool tool(options.getCompilations(), options.getSourcePathList());
+    return tool.run(ct::buildActionFactory(&createExportObject).get());
 }
