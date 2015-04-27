@@ -1,15 +1,24 @@
 #include <clang/Tooling/CommonOptionsParser.h>
 #include <clang/Tooling/Tooling.h>
 
-#include "demo.h"
+#include <iostream>
 
-#define USELESS_DEFINE 2
-#define USELESS_DEFINE 3
+#include "core/clang_interface.hpp"
+#include "export/dump_export.hpp"
 
 static llvm::cl::OptionCategory toolCat("CppTool options");
 
+std::unique_ptr<ct::CTExport> createExportObject(llvm::StringRef fileName) {
+    std::cout << "Creating export object for: " << fileName.str() << std::endl;
+    return std::unique_ptr<ct::CTExport>(new ct::DumpExport(std::cout));
+}
+
 int main(int argc, const char *argv[]) {
-    clang::tooling::CommonOptionsParser options(argc, argv, toolCat);
-    clang::tooling::ClangTool tool(options.getCompilations(), options.getSourcePathList());
-    return tool.run(clang::tooling::newFrontendActionFactory<ct::DemoAction>().get());
+    //clang::tooling::CommonOptionsParser options(argc, argv, toolCat);
+    //clang::tooling::ClangTool tool(options.getCompilations(), options.getSourcePathList());
+
+	auto action = ct::buildActionFactory(&createExportObject).get()->create();
+	clang::tooling::runToolOnCode(action, argv[1]);
+
+    //return tool.run(ct::buildActionFactory(&createExportObject).get());
 }
