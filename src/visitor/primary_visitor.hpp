@@ -14,6 +14,8 @@ namespace ct {
         PrimaryVisitor(RuntimeContext &&context);
 
         bool VisitTagDecl(clang::TagDecl *D);
+
+        bool VisitVarDecl(clang::VarDecl *D);
     };
 }
 

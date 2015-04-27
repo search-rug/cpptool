@@ -15,8 +15,14 @@ namespace ct {
                 "type=" << context->getDeclKindName() <<
         "},decl={"
                 "name=" << tag->getDeclName() << ","
-				"type=" << clang::Decl::castToDeclContext(tag)->getDeclKindName() <<
+                "type=" << clang::Decl::castToDeclContext(tag)->getDeclKindName() <<
         "}"
                 "}\n";
+    }
+
+    void DumpExport::exportVarDecl(const clang::VarDecl *decl) const {
+        (*out) << "VarDecl{where={name=" << Export::getContextIdentifier(decl->getDeclContext()) << "},what={type="
+        << decl->getType().getAsString() << ",name=" << decl->getNameAsString() << ",kind="
+        << decl->getDeclKindName() <<"}}\n";
     }
 }

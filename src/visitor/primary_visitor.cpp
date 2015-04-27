@@ -8,4 +8,9 @@ namespace ct {
         context.out().exportTagDecl(D->getDeclContext(), D);
         return true;
     }
+
+    bool PrimaryVisitor::VisitVarDecl(clang::VarDecl *D) {
+        context.out().exportVarDecl(D);
+        return true;
+    }
 }

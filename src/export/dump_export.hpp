@@ -14,6 +14,8 @@ namespace ct {
         DumpExport(std::ostream &out);
 
         virtual void exportTagDecl(const clang::DeclContext *context, const clang::TagDecl *tag) const override;
+
+        virtual void exportVarDecl(const clang::VarDecl *decl) const override;
     };
 }
 
