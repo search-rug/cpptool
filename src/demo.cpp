@@ -1,7 +1,7 @@
 #include "demo.h"
 
 #include <iostream>
-#include "clang/Lex/Preprocessor.h"
+#include <clang/Lex/Preprocessor.h>
 
 namespace ct {
     std::unique_ptr<clang::ASTConsumer> DemoAction::CreateASTConsumer(
