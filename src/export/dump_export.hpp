@@ -16,6 +16,8 @@ namespace ct {
         virtual void exportTagDecl(const clang::DeclContext *context, const clang::TagDecl *tag) const override;
 
         virtual void exportVarDecl(const clang::VarDecl *decl) const override;
+
+        virtual void exportInclude(const clang::FileEntry *include) const override;
     };
 }
 

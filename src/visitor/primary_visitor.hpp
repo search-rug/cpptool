@@ -16,6 +16,12 @@ namespace ct {
         bool VisitTagDecl(clang::TagDecl *D);
 
         bool VisitVarDecl(clang::VarDecl *D);
+
+        bool VisitTranslationUnitDecl(clang::TranslationUnitDecl *D);
+    private:
+        void exportIncludes();
+
+        inline bool declaredInMain(const clang::Decl *D) const;
     };
 }
 
