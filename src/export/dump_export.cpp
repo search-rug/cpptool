@@ -42,7 +42,7 @@ namespace ct {
     void DumpExport::Function(clang::FunctionDecl const *function) const {
         bool isClassMember = clang::isa<clang::CXXMethodDecl>(function);
         OS() << "Function{where=" << Export::getContextIdentifier(function->getDeclContext())
-        << ",name=" << function->getName()
+        << ",name=" << Export::getFunctionName(function)
         << ",params=" << Export::getParameterRepr(function->params())
         << ",class_function=" << (isClassMember ? "true" : "false") << "}\n";
     }
