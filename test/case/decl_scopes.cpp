@@ -12,6 +12,8 @@ namespace n {
 
     struct str_test {};
 
+    union union_test {};
+
     namespace m {
         class in_namespace {
             class in_class {

@@ -2,6 +2,12 @@ void function() {
     int a;
 }
 
+int a;
+
+namespace ns {
+    int a;
+}
+
 void function(int param1, void *param2) {
 
 }
