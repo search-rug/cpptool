@@ -10,18 +10,32 @@
 namespace ct {
     class PrimaryVisitor : public clang::RecursiveASTVisitor<PrimaryVisitor> {
         RuntimeContext context;
+        clang::FileID primaryFileId;
     public:
         PrimaryVisitor(RuntimeContext &&context);
 
-        bool VisitTagDecl(clang::TagDecl *D);
+        bool VisitFieldDecl(clang::FieldDecl *D);
 
         bool VisitVarDecl(clang::VarDecl *D);
 
         bool VisitTranslationUnitDecl(clang::TranslationUnitDecl *D);
+
+        bool VisitFunctionDecl(clang::FunctionDecl *D);
+
+        bool VisitEnumDecl(clang::EnumDecl *D);
+
+        bool VisitRecordDecl(clang::RecordDecl *D);
+
+        bool VisitTypedefNameDecl(clang::TypedefNameDecl *D);
+
+        bool TraverseTranslationUnitDecl(clang::TranslationUnitDecl *D);
+
     private:
         void exportIncludes();
 
         inline bool declaredInMain(const clang::Decl *D) const;
+
+        inline CTExport const &out() const;
     };
 }
 

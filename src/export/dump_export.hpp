@@ -13,11 +13,25 @@ namespace ct {
     public:
         DumpExport(std::ostream &out);
 
-        virtual void exportTagDecl(const clang::DeclContext *context, const clang::TagDecl *tag) const override;
+        virtual void Include(clang::FileEntry const *include) const;
 
-        virtual void exportVarDecl(const clang::VarDecl *decl) const override;
+        virtual void Record(clang::RecordDecl const *record) const;
 
-        virtual void exportInclude(const clang::FileEntry *include) const override;
+        virtual void Enum(clang::EnumDecl const *enumDef) const;
+
+        virtual void Function(clang::FunctionDecl const *function) const;
+
+        virtual void ParameterVariable(clang::ParmVarDecl const *param) const;
+
+        virtual void MemberVariable(clang::FieldDecl const *field) const;
+
+        virtual void GlobalVariable(clang::VarDecl const *var) const;
+
+        virtual void LocalVariable(clang::VarDecl const *var) const;
+
+        virtual void TypeDef(clang::TypedefNameDecl const *typeDefinition) const;
+    private:
+        inline llvm::raw_ostream &OS() const;
     };
 }
 

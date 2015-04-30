@@ -1,19 +1,49 @@
 #include "visitor/primary_visitor.hpp"
 
 namespace ct {
-    PrimaryVisitor::PrimaryVisitor(RuntimeContext &&context) : context(std::move(context)) {
+    PrimaryVisitor::PrimaryVisitor(RuntimeContext &&context)
+            : context(std::move(context)),
+              primaryFileId(context.getCompilationInstance().getSourceManager().getMainFileID()) {
     }
 
-    bool PrimaryVisitor::VisitTagDecl(clang::TagDecl *D) {
-        if (declaredInMain(D))
-            context.out().exportTagDecl(D->getDeclContext(), D);
+    void PrimaryVisitor::exportIncludes() {
+        auto &&sm = context.getCompilationInstance().getSourceManager();
+        auto rootId = primaryFileId;
 
+        for (auto it = sm.fileinfo_begin(), end = sm.fileinfo_end(); it != end; ++it) {
+            auto &&file = it->getFirst();
+            auto &&fileId = sm.translateFile(file);
+            auto &&includedBy = sm.getFileID(sm.getIncludeLoc(fileId));
+
+            //Only export includes by the primary file
+            if (includedBy == rootId) {
+                out().Include(file);
+            }
+        }
+    }
+
+    bool PrimaryVisitor::declaredInMain(const clang::Decl *D) const {
+        auto &&sm = context.getCompilationInstance().getSourceManager();
+        return this->primaryFileId == sm.getFileID(D->getLocation());
+    }
+
+    bool PrimaryVisitor::VisitFieldDecl(clang::FieldDecl *D) {
+        out().MemberVariable(D);
         return true;
     }
 
     bool PrimaryVisitor::VisitVarDecl(clang::VarDecl *D) {
-        if (declaredInMain(D))
-            context.out().exportVarDecl(D);
+        if (clang::ParmVarDecl *param = clang::dyn_cast<clang::ParmVarDecl>(D)) {
+            //Undefined functions still have their parameters traversed.
+            clang::FunctionDecl *func = clang::dyn_cast<clang::FunctionDecl>(param->getDeclContext());
+            if (!func->isDefined()) return true;
+
+            out().ParameterVariable(param);
+        } else if (D->isLocalVarDecl()) {
+            out().LocalVariable(D);
+        } else if (D->isDefinedOutsideFunctionOrMethod()) {
+            out().GlobalVariable(D);
+        }
 
         return true;
     }
@@ -23,23 +53,56 @@ namespace ct {
         return true;
     }
 
-    void PrimaryVisitor::exportIncludes() {
-        auto &&sm = context.getCompilationInstance().getSourceManager();
-        auto rootId = sm.getMainFileID();
+    bool PrimaryVisitor::VisitFunctionDecl(clang::FunctionDecl *D) {
+        if (!D->isDefined()) return true;
 
-        for (auto it = sm.fileinfo_begin(), end = sm.fileinfo_end(); it != end; ++it) {
-            auto &&file = it->getFirst();
-            auto &&fileId = sm.translateFile(file);
-            auto &&includedBy = sm.getFileID(sm.getIncludeLoc(fileId));
-
-            if (includedBy == rootId) {
-                context.out().exportInclude(file);
-            }
-        }
+        out().Function(D);
+        return true;
     }
 
-    bool PrimaryVisitor::declaredInMain(const clang::Decl *D) const {
-        auto &&sm = context.getCompilationInstance().getSourceManager();
-        return sm.getMainFileID() == sm.getFileID(D->getLocation());
+    bool PrimaryVisitor::VisitEnumDecl(clang::EnumDecl *D) {
+        if (!D->isCompleteDefinition()) return true;
+
+        out().Enum(D);
+        return true;
+    }
+
+    bool PrimaryVisitor::VisitRecordDecl(clang::RecordDecl *D) {
+        if (!D->isCompleteDefinition()) return true;
+
+        out().Record(D);
+        return true;
+    }
+
+    bool PrimaryVisitor::VisitTypedefNameDecl(clang::TypedefNameDecl *D) {
+        out().TypeDef(D);
+        return true;
+    }
+
+    CTExport const &PrimaryVisitor::out() const {
+        return context.out();
+    }
+
+    bool PrimaryVisitor::TraverseTranslationUnitDecl(clang::TranslationUnitDecl *D) {
+        if (!clang::RecursiveASTVisitor<PrimaryVisitor>::WalkUpFromTranslationUnitDecl(D)) return false;
+
+        //Original traversal code from: clang::RecursiveASTVisitor<PrimaryVisitor>::TraverseDeclContextHelper
+
+        //By overriding the traversal of the translation unit we can filter out all
+        //declarations in included files at the source.
+        //This also avoids unnecessary traversal of the AST.
+
+        for (auto *Child : D->decls()) {
+            if (!clang::isa<clang::BlockDecl>(Child) &&
+                !clang::isa<clang::CapturedDecl>(Child) &&
+                declaredInMain(Child)) {
+
+                if (!TraverseDecl(Child)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }
