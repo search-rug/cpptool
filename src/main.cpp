@@ -7,6 +7,7 @@
 #include "export/dump_export.hpp"
 
 static llvm::cl::OptionCategory toolCat("CppTool options");
+static llvm::cl::extrahelp CommonHelp(clang::tooling::CommonOptionsParser::HelpMessage);
 
 std::unique_ptr<ct::CTExport> createExportObject(llvm::StringRef const fileName, clang::CompilerInstance const &ci) {
     std::cout << "Creating export object for: " << fileName.str() << std::endl;
