@@ -45,7 +45,7 @@ namespace ct {
                     firstDone = true;
                 }
 
-                out << param->getType().getAsString();
+                out << param->getType().getCanonicalType().getAsString();
             }
         }
 
