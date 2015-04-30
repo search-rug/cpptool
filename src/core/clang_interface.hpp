@@ -13,7 +13,8 @@
 #include "visitor/primary_visitor.hpp"
 
 namespace ct {
-    using ExportFactory = std::function<std::unique_ptr<ct::CTExport>(llvm::StringRef)>;
+    using ExportFactory = std::function<std::unique_ptr<ct::CTExport>(llvm::StringRef const,
+                                                                      clang::CompilerInstance const &)>;
 
     class CppToolConsumer : public clang::ASTConsumer {
         PrimaryVisitor visitor;

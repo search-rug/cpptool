@@ -8,7 +8,7 @@
 
 static llvm::cl::OptionCategory toolCat("CppTool options");
 
-std::unique_ptr<ct::CTExport> createExportObject(llvm::StringRef fileName) {
+std::unique_ptr<ct::CTExport> createExportObject(llvm::StringRef const fileName, clang::CompilerInstance const &ci) {
     std::cout << "Creating export object for: " << fileName.str() << std::endl;
     return std::unique_ptr<ct::CTExport>(new ct::DumpExport(std::cout));
 }

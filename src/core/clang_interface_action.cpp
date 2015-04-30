@@ -8,7 +8,7 @@ namespace ct {
 
     std::unique_ptr<clang::ASTConsumer> CppToolAction::CreateASTConsumer(clang::CompilerInstance &compiler,
                                                                          llvm::StringRef inFile) {
-        return std::unique_ptr<clang::ASTConsumer>(new CppToolConsumer(exportFactory(inFile), compiler));
+        return std::unique_ptr<clang::ASTConsumer>(new CppToolConsumer(exportFactory(inFile, compiler), compiler));
     }
 
     class CppToolActionFactory : public clang::tooling::FrontendActionFactory {
