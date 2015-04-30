@@ -1,26 +1,60 @@
 #include "export/export_util.hpp"
 
-#include <llvm/Support/Casting.h>
-
 namespace ct {
     namespace Export {
 
         std::string getFullIdentifier(clang::Decl *decl) {
-            if (clang::FunctionDecl *func = clang::dyn_cast<clang::FunctionDecl>(decl)) {
-                //TODO: does not take arguments/return into account.
-                //Perhaps consider overloads to be dependencies of the same root function?
-                return "::" + func->getQualifiedNameAsString();
-            } else if (clang::NamedDecl *named = clang::dyn_cast<clang::NamedDecl>(decl)) {
-                return "::" + named->getQualifiedNameAsString();
-            } else if (decl == decl->getTranslationUnitDecl()) {
-                return "::";
-            } else {
-                return getFullIdentifier(clang::Decl::castFromDeclContext(decl->getDeclContext()));
-            }
+            std::ostringstream out;
+            out << '"';
+            Internal::unpackIdentifier(out, decl);
+            out << '"';
+            return out.str();
         }
 
         std::string getContextIdentifier(clang::DeclContext const *context) {
             return getFullIdentifier(clang::Decl::castFromDeclContext(context));
+        }
+
+        void Internal::unpackIdentifier(std::ostringstream &out, clang::Decl const *decl) {
+            using clang::Decl;
+
+            if (decl->getKind() == Decl::Kind::TranslationUnit) return;
+
+            //Output parent context
+            Internal::unpackIdentifier(out, clang::Decl::castFromDeclContext(decl->getDeclContext()));
+
+            out << "::";
+
+            if (clang::FunctionDecl const *func = clang::dyn_cast<clang::FunctionDecl>(decl)) {
+                out << func->getName().str() << '(';
+                unpackParameterRepr(out, func->params());
+                out << ')';
+            } else if (clang::NamedDecl const *named = clang::dyn_cast<clang::NamedDecl>(decl)) {
+                out << named->getName().str();
+            } else {
+                out << "{unknown}";
+            }
+        }
+
+        void Internal::unpackParameterRepr(std::ostringstream &out, clang::FunctionDecl::param_const_range params) {
+            bool firstDone = false;
+            for (auto param : params) {
+                if (firstDone) {
+                    out << ',';
+                } else {
+                    firstDone = true;
+                }
+
+                out << param->getType().getAsString();
+            }
+        }
+
+        std::string getParameterRepr(clang::FunctionDecl::param_const_range params) {
+            std::ostringstream out;
+            out << '[';
+            Internal::unpackParameterRepr(out, params);
+            out << ']';
+            return out.str();
         }
     }
 }
