@@ -35,7 +35,7 @@ namespace ct {
 
         inline bool declaredInMain(const clang::Decl *D) const;
 
-        inline CTExport const &out() const;
+        inline CTExport &out() const;
     };
 }
 

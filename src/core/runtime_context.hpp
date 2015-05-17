@@ -18,7 +18,7 @@ namespace ct {
 
         RuntimeContext(RuntimeContext &&orig);
 
-        CTExport const &out() const;
+        CTExport &out() const;
 
         clang::ASTContext const &context() const;
 

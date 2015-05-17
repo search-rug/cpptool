@@ -79,7 +79,7 @@ namespace ct {
         return true;
     }
 
-    CTExport const &PrimaryVisitor::out() const {
+    CTExport &PrimaryVisitor::out() const {
         return context.out();
     }
 

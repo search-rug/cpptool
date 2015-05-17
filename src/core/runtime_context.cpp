@@ -7,7 +7,7 @@ namespace ct {
     ) : exportInterface(std::move(exportInterface)), compilationInstance(compilationInstance) {
     }
 
-    CTExport const &RuntimeContext::out() const {
+    CTExport &RuntimeContext::out() const {
         return *exportInterface;
     }
 
