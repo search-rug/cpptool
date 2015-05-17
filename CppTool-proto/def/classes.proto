@@ -9,7 +9,8 @@ message RecordDef {
     
     optional SourceRange definition = 2;
     
-    // parents
+    // Export typeid for resolving
+    required Type internal_type = 3;
 }
 
 message CxxRecordDef {
