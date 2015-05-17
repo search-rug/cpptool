@@ -24,7 +24,11 @@ namespace ct {
 	template<typename MessageLite>
 	void ProtobufOutput::writeMessage(typename std::remove_reference<MessageLite>::type &msg) {
 		output.WriteVarint32(msg.ByteSize());
-		msg.SerializePartialToCodedStream(&output);
+		msg.SerializeToCodedStream(&output);
+		//TODO: validate return bool
+#ifndef NDEBUG
+		msg.PrintDebugString();
+#endif //NDEBUG
 	}
 }
 
