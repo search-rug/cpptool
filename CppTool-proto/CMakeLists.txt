@@ -15,6 +15,8 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_DEFS})
 set(CPPTOOL_PROTO_INCLUDES ${PROTOBUF_INCLUDE_DIRS} ${PROTO_HDRS} PARENT_SCOPE)
 set(CPPTOOL_PROTO_LIBRARY cppToolProto PARENT_SCOPE)
 
+add_definitions(-DGOOGLE_PROTOBUF_NO_RTTI)
+
 add_library(cppToolProto STATIC ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(cppToolProto ${PROTOBUF_LIBRARIES})
 

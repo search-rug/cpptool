@@ -5,7 +5,7 @@
 #include <type_traits>
 
 #include <google/protobuf/io/zero_copy_stream_impl.h>
-#include <google/protobuf/io/coded_stream_inl.h>
+#include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/message.h>
 
 namespace ct {
