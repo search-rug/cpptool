@@ -28,7 +28,7 @@ namespace ct {
 
 		void ResolveType(ct::proto::Type &target, clang::QualType type);
 
-		void ResolveLocation(ct::proto::SourceRange &range, clang::SourceRange &clangRange);
+		void ResolveLocation(ct::proto::SourceRange &range, clang::SourceRange clangRange);
 
 		void ResolveName(ct::proto::ScopedName &name, clang::NamedDecl const &decl);
 	private:

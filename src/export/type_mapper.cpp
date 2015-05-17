@@ -42,7 +42,7 @@ namespace ct {
 		target.set_type_id(GetTypeId(selectedType));
 	}
 
-	void TypeMapper::ResolveLocation(ct::proto::SourceRange &range, clang::SourceRange &clangRange) {
+	void TypeMapper::ResolveLocation(ct::proto::SourceRange &range, clang::SourceRange clangRange) {
 		auto &&sm = clang.getSourceManager();
 		range.set_file(sm.getFilename(clangRange.getBegin()));
 		{

@@ -10,6 +10,7 @@
 #include "export/export_api.hpp"
 #include "export/protobuf_output.hpp"
 #include "export/type_mapper.hpp"
+#include "wrapper.pb.h"
 
 namespace ct {
     class ProtoBufExport : public CTExport {
