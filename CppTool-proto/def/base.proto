@@ -18,7 +18,7 @@ message ScopedName {
     required string name = 1;
     
     // Name context, e.g. "::Hello" for namespace "Hello"
-    required string context = 2;
+    optional string context = 2;
 }
 
 message TypeDefinition {
