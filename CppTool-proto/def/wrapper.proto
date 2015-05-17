@@ -2,6 +2,7 @@ syntax = "proto2";
 package ct.proto;
 option java_package = "nl.rug.search.proto";
 
+import "base.proto"; //TypeDefinition
 import "vars.proto"; //Var, ClassVar
 import "funcs.proto"; //FunctionDef, ClassFunctionDef
 import "classes.proto"; //RecordDef, EnumDef, CxxRecordDef
@@ -18,6 +19,7 @@ message Envelope {
         EnumDef enum_def = 7;
         Var var = 8;
         ClassVar c_var = 9;
+        TypeDefinition type = 10;
     }
 }
 
