@@ -29,4 +29,8 @@ if( APPLE )
   add_definitions(-fno-rtti -fvisibility=hidden)
 endif( APPLE )
 
+# Include Protobuf subproject
+add_subdirectory(CppTool-proto)
+include_directories(${CPPTOOL_PROTO_INCLUDES})
+
 add_subdirectory(src)

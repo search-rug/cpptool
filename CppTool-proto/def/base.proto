@@ -1,0 +1,51 @@
+syntax = "proto2";
+package ct.proto;
+option java_package = "nl.rug.search.proto";
+
+message SourceRange {
+    message SourceLocation {
+        required uint32 line = 1;
+        required uint32 column = 2;
+    }
+    
+    required string file = 1;
+    required SourceLocation start = 2;
+    required SourceLocation end = 3;
+}
+
+message ScopedName {
+    // Name e.g. "World"
+    required string name = 1;
+    
+    // Name context, e.g. "::Hello" for namespace "Hello"
+    required string context = 2;
+}
+
+message TypeDefinition {
+    // Contains the type pointer value, unique for an invocation of clang
+    required fixed64 type_id = 1;
+    
+    // Location of the definition of the type, will not exist for built-in types
+    optional SourceRange location = 2;
+    
+    // Name of the type
+    required ScopedName specifier = 3;
+    
+    // Whether a type is strongly defined. (Used to detect link-time type resolution)
+    required bool strongly_defined = 4;
+}
+
+message Type {
+    // Unique reference of the type, must have been emitted in stream before use.
+    required fixed64 type_id = 1;
+    
+    enum Modifier {
+        INVALID = 0;
+        POINTER = 1;
+        REFERENCE = 2;
+    }
+    
+    // Modifiers are ordered depending on their syntactic ordered
+    // int *& == [REFERENCE, POINTER] to int, aka reference to pointer of int
+    repeated Modifier modifiers = 2;
+}

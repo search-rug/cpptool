@@ -1,0 +1,15 @@
+syntax = "proto2";
+package ct.proto;
+option java_package = "nl.rug.search.proto";
+
+import "base.proto";
+
+message IncludeRelation {
+    required string origin = 1;
+    required string target = 2;
+}
+
+message TypeDef {
+    required ScopedName name = 1;
+    required Type mappedType = 2;
+}

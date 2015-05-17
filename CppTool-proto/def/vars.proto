@@ -1,0 +1,27 @@
+syntax = "proto2";
+package ct.proto;
+option java_package = "nl.rug.search.proto";
+
+import "base.proto";
+
+message Var {
+    required ScopedName name = 1;
+    
+    required Type own_type = 2;
+    
+    enum VarKind {
+        UNKNOWN = 0;
+        LOCAL = 1;
+        PARAMETER = 2;
+        GLOBAL = 3;
+        CLASS = 4;
+    }
+    
+    required VarKind kind = 3;
+}
+
+message ClassVar {
+    required Var base = 1;
+    
+    required Type parent = 2;
+}

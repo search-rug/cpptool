@@ -7,6 +7,9 @@ set(SRCS
 
     export_util.cpp
     export_util.hpp
+
+    protobuf_output.cpp
+    protobuf_output.hpp
     )
 
 add_library(export STATIC ${SRCS})

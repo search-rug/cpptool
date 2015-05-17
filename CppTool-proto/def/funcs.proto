@@ -1,0 +1,25 @@
+syntax = "proto2";
+package ct.proto;
+option java_package = "nl.rug.search.proto";
+
+import "base.proto";
+
+message FunctionDef {
+    required ScopedName name = 1;
+    
+    required Type return_type = 2;
+    
+    optional SourceRange body = 3;
+    
+    //NOTE: Parameters are emitted separately
+}
+
+message ClassFunctionDef {
+    required FunctionDef base = 1;
+    
+    required Type parent = 2;
+    
+    required bool virtual = 3;
+    
+    required bool static = 4;
+}
