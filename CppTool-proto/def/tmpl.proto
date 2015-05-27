@@ -1,0 +1,9 @@
+syntax = "proto2";
+package ct.proto;
+option java_package = "nl.rug.search.proto";
+
+//TODO: template definitions
+
+//Map template token types ("T") to the class/function that owns them
+
+//If a specialization is created, map it to the class/function that owns it
