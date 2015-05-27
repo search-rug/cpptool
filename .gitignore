@@ -41,3 +41,5 @@ install_manifest.txt
 
 ### Project files ###
 build/
+# Binary output files
+*.pb
