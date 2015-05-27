@@ -17,7 +17,7 @@ namespace ct {
     public:
 		ProtoBufExport(std::FILE *file, llvm::StringRef const targetName, clang::CompilerInstance const &ci);
 
-        virtual void Include(clang::FileEntry const *include);
+		virtual void Include(clang::FileEntry const &origin, clang::FileEntry const &target);
 
         virtual void Record(clang::RecordDecl const *record);
 

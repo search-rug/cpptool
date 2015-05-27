@@ -11,8 +11,7 @@ namespace ct {
         //Names use PascalCase to avoid using keywords
 
         //#include
-		//TODO: modify to be an Origin->Target include
-        virtual void Include(clang::FileEntry const *include) = 0;
+		virtual void Include(clang::FileEntry const &origin, clang::FileEntry const &target) = 0;
 
         //class/struct/union
         virtual void Record(clang::RecordDecl const *record) = 0;

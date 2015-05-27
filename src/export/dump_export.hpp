@@ -13,7 +13,7 @@ namespace ct {
     public:
         DumpExport(std::ostream &out);
 
-        virtual void Include(clang::FileEntry const *include);
+		virtual void Include(clang::FileEntry const &origin, clang::FileEntry const &target);
 
         virtual void Record(clang::RecordDecl const *record);
 

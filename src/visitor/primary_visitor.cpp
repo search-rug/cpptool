@@ -15,10 +15,9 @@ namespace ct {
             auto &&fileId = sm.translateFile(file);
             auto &&includedBy = sm.getFileID(sm.getIncludeLoc(fileId));
 
-            //Only export includes by the primary file
-            if (includedBy == rootId) {
-                out().Include(file);
-            }
+			if (includedBy.isInvalid()) continue; //The file is not included by anything
+
+			out().Include(*sm.getFileEntryForID(includedBy), *file);
         }
     }
 

@@ -8,9 +8,9 @@ namespace ct {
     DumpExport::DumpExport(std::ostream &out) : out(std::unique_ptr<llvm::raw_ostream>(new llvm::raw_os_ostream(out))) {
     }
 
-    void DumpExport::Include(clang::FileEntry const *include) {
-        OS() << "Include{path=\"" << include->getName() << "\"}\n";
-    }
+	void DumpExport::Include(clang::FileEntry const &origin, clang::FileEntry const &target) {
+		OS() << "Include{origin=\"" << origin.getName() << "\",target=\"" << target.getName() << "\"}\n";
+	}
 
     void DumpExport::Record(clang::RecordDecl const *record) {
         using clang::TagDecl;

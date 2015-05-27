@@ -12,11 +12,11 @@ namespace ct {
 		out.writeMessage<ct::proto::Prelude>(prelude);
 	}
 
-	void ProtoBufExport::Include(clang::FileEntry const *include) {
+	void ProtoBufExport::Include(clang::FileEntry const &origin, clang::FileEntry const &target) {
 		exportData([&](ct::proto::Envelope &env) {
 			auto incl = env.mutable_include();
-			incl->set_origin("");
-			incl->set_target(include->getName());
+			incl->set_origin(origin.getName());
+			incl->set_target(target.getName());
 		});
 	}
 
