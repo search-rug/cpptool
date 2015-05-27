@@ -19,6 +19,20 @@ message ScopedName {
     
     // Name context, e.g. "::Hello" for namespace "Hello"
     optional string context = 2;
+    
+    // If a name is isolated (in a lambda for example), it will be in an isolated context, bound to a higher context
+    optional fixed64 isolated_context_id = 3;
+}
+
+// Isolated contexts are anonymous constructs such as lambdas
+message IsolatedContextDefinition {
+    required fixed64 context_id = 1;
+    
+    // Isolated contexts always have a parent
+    required ScopedName parent = 2;
+    
+    // Isolated context define a special type
+    required Type own_type = 3;
 }
 
 message TypeDefinition {

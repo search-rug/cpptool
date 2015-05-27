@@ -60,6 +60,7 @@ namespace ct {
 	void TypeMapper::ResolveName(ct::proto::ScopedName &name, clang::NamedDecl const &decl) {
 		name.set_name(decl.getName());
 		name.set_context(Export::getContextIdentifier(decl.getDeclContext()));
+		//TODO: resolve anonymous contexts.
 	}
 
 	TypeMapper::PtrInt TypeMapper::GetTypeId(clang::QualType type) {
