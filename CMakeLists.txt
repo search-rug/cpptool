@@ -29,6 +29,10 @@ if( APPLE )
   add_definitions(-fno-rtti -fvisibility=hidden)
 endif( APPLE )
 
+if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cpptool-proto/CMakeLists.txt)
+    message(FATAL_ERROR "Please initialize the cpptool-proto submodule: 'git submodule update --init'")
+endif()
+
 # Include Protobuf subproject
 add_subdirectory(cpptool-proto)
 include_directories(${CPPTOOL_PROTO_INCLUDES})
