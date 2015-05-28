@@ -5,10 +5,7 @@ add_subdirectory(export)
 add_subdirectory(core)
 
 set(SRCS
-    demo.cpp
     main.cpp
-
-    demo.h
     )
 
 add_executable(CppToolMain ${SRCS})
