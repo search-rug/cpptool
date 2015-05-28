@@ -19,4 +19,4 @@ set(SRCS
     )
 
 add_library(export STATIC ${SRCS})
-target_link_libraries(export cppToolProto LLVMSupport)
+target_link_libraries(export ${CPPTOOL_PROTO_LIBRARY} LLVMSupport)
