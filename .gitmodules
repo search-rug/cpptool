@@ -1,0 +1,3 @@
+[submodule "cpptool-proto"]
+	path = cpptool-proto
+	url = git@bitbucket.org:kiskae/cpptool-proto.git

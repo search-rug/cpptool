@@ -30,7 +30,7 @@ if( APPLE )
 endif( APPLE )
 
 # Include Protobuf subproject
-add_subdirectory(CppTool-proto)
+add_subdirectory(cpptool-proto)
 include_directories(${CPPTOOL_PROTO_INCLUDES})
 
 add_subdirectory(src)
