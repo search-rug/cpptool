@@ -45,17 +45,20 @@ llvm::SmallString<1024> getAbsoluteOutputPath() {
 	return tmp;
 }
 
-std::FILE *generateOutputFile(llvm::StringRef const fileName) {
-	// Cached as a static variable since it cannot change once we reach this point
-	static llvm::SmallString<1024> outputDirectory = getAbsoluteOutputPath();
+llvm::SmallString<1024> &cachedAbsolutePath() {
+    // Cached as a static variable since it cannot change once we reach this point
+    static llvm::SmallString<1024> outputDirectory = getAbsoluteOutputPath();
+    return outputDirectory;
+}
 
+std::FILE *generateOutputFile(llvm::StringRef const fileName) {
 	using namespace llvm::sys;
 
 	//Get last part of the path
 	auto targetFileName = fileName.rsplit(os_filesep()).second.str();
 	
 	//Add last part to the output directory and add a unique identifier token
-	Twine const nonUniqueFile = Twine(outputDirectory).concat(targetFileName).concat("-%%-%%-%%-%%.pb");
+	Twine const nonUniqueFile = Twine(cachedAbsolutePath()).concat(targetFileName).concat("-%%-%%-%%-%%.pb");
 
 	//Ensure the name is unique.
 	llvm::SmallString<1024> tmpFile;
@@ -64,8 +67,14 @@ std::FILE *generateOutputFile(llvm::StringRef const fileName) {
 	if (err) {
 		llvm::errs() << "Error creating binary output fileName" << err.message() << "\n";
 	}
-
-	return std::fopen(tmpFile.c_str(), "w");
+    
+    std::FILE *ptr = std::fopen(tmpFile.c_str(), "w");
+    if (!ptr) {
+        llvm::outs() << "fopen failed: " << std::strerror(errno) << "\n";
+        return nullptr;
+    } else {
+        return ptr;
+    }
 }
 
 std::unique_ptr<ct::CTExport> createBinaryExport(llvm::StringRef const fileName, clang::CompilerInstance const &ci) {
@@ -85,7 +94,7 @@ int main(int argc, const char *argv[]) {
 	if (!DumpExport) {
 		//Ensure binary export directory is a directory and exists
 		using namespace llvm::sys;
-		Twine const directory(OutputDirectory);
+		Twine const directory(cachedAbsolutePath());
 
 		if (directory.isTriviallyEmpty()) {
 			llvm::errs() << "Output directory cannot be unspecified.\n";

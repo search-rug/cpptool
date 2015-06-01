@@ -57,13 +57,18 @@ namespace ct {
             return out.str();
         }
 
-        std::string getFunctionName(clang::FunctionDecl const *func) {
-            auto name = func->getDeclName();
+        std::string getFunctionName(clang::FunctionDecl const &func) {
+            auto name = func.getDeclName();
             if (name.isIdentifier()) {
                 return name.getAsIdentifierInfo()->getName().str();
             } else {
                 return name.getAsString();
             }
+
+        }
+
+        std::string getFunctionName(clang::FunctionDecl const *func) {
+            return getFunctionName(*func);
         }
     }
 }

@@ -16,6 +16,8 @@ namespace ct {
 
         std::string getParameterRepr(clang::FunctionDecl::param_const_range params);
 
+        std::string getFunctionName(clang::FunctionDecl const &func);
+
         std::string getFunctionName(clang::FunctionDecl const *func);
 
         struct Internal {
