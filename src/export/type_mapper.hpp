@@ -4,6 +4,7 @@
 #define CPPTOOL_TYPE_MAPPER_HPP
 
 #include <unordered_set>
+#include <unordered_map>
 #include <clang/AST/Type.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <cstdint>
@@ -23,6 +24,7 @@ namespace ct {
 		ProtobufOutput &typeOutput;
 		clang::CompilerInstance const &clang;
 		std::unordered_set<PtrInt> seenTypes;
+		std::unordered_map<PtrInt, std::string> emittedContexts;
 	public:
 		TypeMapper(ProtobufOutput &typeOutput, clang::CompilerInstance const &clang);
 
@@ -31,8 +33,12 @@ namespace ct {
 		void ResolveLocation(ct::proto::SourceRange &range, clang::SourceRange clangRange);
 
 		void ResolveName(ct::proto::ScopedName &name, clang::NamedDecl const &decl);
+
+		void ResolveContext(ct::proto::ScopedName &name, clang::DeclContext const *context);
 	private:
 		PtrInt GetTypeId(clang::QualType type);
+
+		void GetContext(ct::proto::ScopedName &name, clang::CXXRecordDecl const *lambdaContext);
 
 		void DetermineTypeDeclaration(ct::proto::TypeDefinition &def, clang::QualType type);
     };

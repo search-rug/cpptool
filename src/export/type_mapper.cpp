@@ -67,9 +67,28 @@ namespace ct {
         } else {
             name.set_name(decl.getName());
         }
-        name.set_context(Export::getContextIdentifier(decl.getDeclContext()));
-        //TODO: resolve anonymous contexts.
-    }
+		ResolveContext(name, decl.getDeclContext());
+	}
+
+	void TypeMapper::ResolveContext(ct::proto::ScopedName &name, clang::DeclContext const *context) {
+		clang::DeclContext const * const tuDecl = context->getParentASTContext().getTranslationUnitDecl();
+		clang::DeclContext const * current = context->getPrimaryContext();
+		for (;;) {
+			if (current == tuDecl) {//Top of the tree is the translation unit declaration
+				break;
+			} else if (clang::CXXRecordDecl const *rec = clang::dyn_cast<clang::CXXRecordDecl>(current)) {
+				if (rec->isLambda()) {
+					//Resolve the lambda's context!
+					GetContext(name, rec);
+					return;
+				}
+			}
+			current = current->getParent()->getPrimaryContext();
+		}
+
+		//Base case, just unpack the context
+		name.set_context(Export::getContextIdentifier(context));
+	}
 
     TypeMapper::PtrInt TypeMapper::GetTypeId(clang::QualType type) {
         auto id = reinterpret_cast<TypeMapper::PtrInt>(type.getTypePtr());
@@ -84,7 +103,34 @@ namespace ct {
             typeOutput.writeMessage<ct::proto::Envelope>(env);
         }
         return id;
-    }
+	}
+
+	void TypeMapper::GetContext(ct::proto::ScopedName &name, clang::CXXRecordDecl const *lambdaContext) {
+		auto id = reinterpret_cast<TypeMapper::PtrInt>(lambdaContext);
+		auto result = emittedContexts.emplace(id, "");
+		if (result.second) { //This context is new, we need to emit the data and record its parent context
+			ct::proto::Envelope env;
+			auto output = env.mutable_iso_context();
+
+			ResolveContext(*output->mutable_parent(), lambdaContext->getParent());
+			ResolveType(*output->mutable_own_type(), clang::QualType(lambdaContext->getTypeForDecl(), 0));
+
+			auto virtualContext = output->parent().context();
+			output->set_context_id(id);
+			output->mutable_parent()->set_name(""); //Parent name is required, but not relevant in this case
+
+			//Record to map for future usage, emit info
+			(*result.first).second = virtualContext;
+			typeOutput.writeMessage<ct::proto::Envelope>(env);
+
+			//Finally, set the data on the parent
+			name.set_isolated_context_id(id);
+			name.set_context(virtualContext);
+		} else {
+			name.set_context((*result.first).second);
+			name.set_isolated_context_id(id);
+		}
+	}
 
     void TypeMapper::DetermineTypeDeclaration(ct::proto::TypeDefinition &def, clang::QualType type) {
         if (clang::TypedefType const *tdef = clang::dyn_cast<clang::TypedefType>(type.getTypePtr())) {

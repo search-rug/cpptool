@@ -10,6 +10,10 @@ namespace a { namespace b { namespace c {
 
 class forward_declared;
 
+auto global_lambda = [](int i) {
+    i = i + 1;
+};
+
 namespace test {
     using namespace a::b::c;
     
@@ -26,9 +30,20 @@ class friend_test {
     friend a::b::c::d;
 };
 
+void lambda_nesting() {
+    auto p = [&](int i) {
+        auto nested_lamda = [&](int j) {
+        
+        };
+    };
+}
+
 template<typename T>
 class template_test {
     using Forward = T;
+    
+    template<int N>
+    void test() const;
 };
 
 template<>
