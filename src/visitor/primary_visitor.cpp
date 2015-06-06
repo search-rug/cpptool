@@ -78,6 +78,11 @@ namespace ct {
         return true;
     }
 
+	bool PrimaryVisitor::VisitFriendDecl(clang::FriendDecl *D) {
+		out().Friend(D);
+		return true;
+	}
+
     CTExport &PrimaryVisitor::out() const {
         return context.out();
     }

@@ -36,6 +36,9 @@ namespace ct {
 
         //type remapping
         virtual void TypeDef(clang::TypedefNameDecl const *typeDefinition) = 0;
+
+		//friend relations
+		virtual void Friend(clang::FriendDecl const *friends) = 0;
     };
 }
 

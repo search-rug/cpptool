@@ -33,7 +33,9 @@ namespace ct {
 
         virtual void LocalVariable(clang::VarDecl const *var);
 
-        virtual void TypeDef(clang::TypedefNameDecl const *typeDefinition);
+		virtual void TypeDef(clang::TypedefNameDecl const *typeDefinition);
+
+		virtual void Friend(clang::FriendDecl const *friends);
 	private:
 		struct file_deleter {
 			void operator()(std::FILE *file) {

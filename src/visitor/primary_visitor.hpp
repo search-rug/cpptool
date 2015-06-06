@@ -26,7 +26,9 @@ namespace ct {
 
         bool VisitRecordDecl(clang::RecordDecl *D);
 
-        bool VisitTypedefNameDecl(clang::TypedefNameDecl *D);
+		bool VisitTypedefNameDecl(clang::TypedefNameDecl *D);
+
+		bool VisitFriendDecl(clang::FriendDecl *D);
 
         bool TraverseTranslationUnitDecl(clang::TranslationUnitDecl *D);
 

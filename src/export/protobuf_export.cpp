@@ -2,6 +2,7 @@
 
 #include "wrapper.pb.h"
 
+#include <clang/AST/DeclFriend.h>
 #include <algorithm>
 
 namespace ct {
@@ -119,6 +120,25 @@ namespace ct {
 			auto tdef = env.mutable_tdef();
 			mapper.ResolveName(*tdef->mutable_name(), *typeDefinition);
 			mapper.ResolveType(*tdef->mutable_mappedtype(), typeDefinition->getUnderlyingType());
+		});
+	}
+
+
+	void ProtoBufExport::Friend(clang::FriendDecl const *friends) {
+		exportData([&](ct::proto::Envelope &env) {
+			auto fdef = env.mutable_friend_();
+
+			if (clang::TagDecl const *tag = clang::dyn_cast<clang::TagDecl>(friends->getDeclContext())) {
+				mapper.ResolveType(*fdef->mutable_origin(), clang::QualType(tag->getTypeForDecl(), 0));
+			} else {
+				assert("Unable to discover type for friend relation");
+			}
+
+			if (friends->getFriendType()) {
+				mapper.ResolveType(*fdef->mutable_type_friend(), friends->getFriendType()->getType());
+			} else {
+				mapper.ResolveName(*fdef->mutable_friend_(), *friends->getFriendDecl());
+			}
 		});
 	}
 }
