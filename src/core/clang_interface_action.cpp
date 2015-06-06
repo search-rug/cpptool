@@ -32,9 +32,22 @@ namespace ct {
 
 	IdSet const createInputIdSet(std::vector<std::string> inputFiles, clang::FileManager &fm) {
 		IdSet ids;
+
+        //Remove non-file entries from the input.
+        //We can safely modify since its a value-copy of the original vector.
+        inputFiles.erase(std::remove_if(std::begin(inputFiles), std::end(inputFiles), [&](std::string &file) {
+            return fm.getFile(file) == nullptr;
+        }), std::end(inputFiles));
+
 		std::transform(std::begin(inputFiles), std::end(inputFiles), std::inserter(ids, std::end(ids)), [&](std::string &file) {
-			//getFile can return nullptr, but we can presume the input files exist...
-			return std::cref(fm.getFile(file)->getUniqueID());
+			//getFile can return nullptr
+            auto &&fileEntry = fm.getFile(file);
+            if (!fileEntry) { // sanity check, since a nullptr can easily result in corrupt data
+                llvm::outs() << "Unable to locate file: " << file << "\n";
+                llvm::outs().flush();
+                ::abort();
+            }
+			return std::cref(fileEntry->getUniqueID());
 		});
 		return ids;
 	}
