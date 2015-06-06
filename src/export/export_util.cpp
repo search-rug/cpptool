@@ -5,9 +5,7 @@ namespace ct {
 
         std::string getFullIdentifier(clang::Decl *decl) {
             std::ostringstream out;
-            out << '"';
             Internal::unpackIdentifier(out, decl);
-            out << '"';
             return out.str();
         }
 
