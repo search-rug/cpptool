@@ -26,12 +26,21 @@ include_directories(SYSTEM ${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
 if( APPLE )
-  add_definitions(-fno-rtti -fvisibility=hidden)
+    add_definitions(-fno-rtti -fvisibility=hidden)
 endif( APPLE )
 
 if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cpptool-proto/CMakeLists.txt)
     message(FATAL_ERROR "Please initialize the cpptool-proto submodule: 'git submodule update --init'")
 endif()
+
+if( MSVC )
+    # Disable various compilation warnings caused by clang in MSVC
+    # while it is possible to disable these locally through #pragma's
+    # the include locations are too wide-spread through the code-base
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
+    add_definitions(/wd4800 /wd4291 /wd4244 /wd4146)
+    set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SAFESEH:NO")
+endif( MSVC )
 
 # Include Protobuf subproject
 add_subdirectory(cpptool-proto)
