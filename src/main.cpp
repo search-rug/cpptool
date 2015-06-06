@@ -5,7 +5,6 @@
 #include <iostream>
 
 #include "core/clang_interface.hpp"
-#include "export/dump_export.hpp"
 #include "export/protobuf_export.hpp"
 
 using namespace llvm;
