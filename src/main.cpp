@@ -19,11 +19,6 @@ static cl::opt<std::string> OutputDirectory("out",
 	cl::cat(toolCat)
 );
 
-static cl::opt<bool> DumpExport("dump", 
-	cl::desc("Write output to STDOUT instead of exporting binary files."),
-	cl::cat(toolCat)
-);
-
 inline char os_filesep() {
 #ifdef _WIN32
 	return '\\';
@@ -82,16 +77,11 @@ std::unique_ptr<ct::CTExport> createBinaryExport(llvm::StringRef const fileName,
 	return std::unique_ptr<ct::CTExport>(new ct::ProtoBufExport(generateOutputFile(fileName), fileName, ci));
 }
 
-std::unique_ptr<ct::CTExport> createDumpExport(llvm::StringRef const fileName, clang::CompilerInstance const &ci) {
-	llvm::outs() << "Creating export object for: " << fileName.str() << "\n";
-	return std::unique_ptr<ct::CTExport>(new ct::DumpExport(std::cout));
-}
-
 int main(int argc, const char *argv[]) {
     clang::tooling::CommonOptionsParser options(argc, argv, toolCat);
     clang::tooling::ClangTool tool(options.getCompilations(), options.getSourcePathList());
 
-	if (!DumpExport) {
+	{
 		//Ensure binary export directory is a directory and exists
 		using namespace llvm::sys;
 		Twine const directory(cachedAbsolutePath());
@@ -118,6 +108,5 @@ int main(int argc, const char *argv[]) {
 
 	llvm::outs().flush();
 
-	ct::ExportFactory factory = !DumpExport ? &createBinaryExport : &createDumpExport;
-	return tool.run(ct::buildActionFactory(factory).get());
+	return tool.run(ct::buildActionFactory(&createBinaryExport).get());
 }
