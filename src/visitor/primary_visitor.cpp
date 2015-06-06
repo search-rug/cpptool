@@ -9,7 +9,6 @@ namespace ct {
 
     void PrimaryVisitor::exportIncludes() {
         auto &&sm = context.getCompilationInstance().getSourceManager();
-        auto rootId = primaryFileId;
 
         for (auto it = sm.fileinfo_begin(), end = sm.fileinfo_end(); it != end; ++it) {
             auto &&file = it->getFirst();
