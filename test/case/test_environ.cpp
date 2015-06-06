@@ -33,7 +33,7 @@ class friend_test {
 void lambda_nesting() {
     auto p = [&](int i) {
         auto nested_lamda = [&](int j) {
-        
+            int z = i + j;
         };
     };
 }
