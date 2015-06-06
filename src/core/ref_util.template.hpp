@@ -10,7 +10,7 @@ template<typename T>
 struct std::less < std::reference_wrapper<T> > {
 	std::less<T> compare = std::less<T>();
 
-	bool operator()(const std::reference_wrapper<T>& ref1, const std::reference_wrapper<T>& ref2) {
+	bool operator()(const std::reference_wrapper<T>& ref1, const std::reference_wrapper<T>& ref2) const {
 		return compare(ref1, ref2);
 	}
 };
