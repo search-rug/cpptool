@@ -1,5 +1,6 @@
 #include <clang/Tooling/CommonOptionsParser.h>
 #include <clang/Tooling/Tooling.h>
+#include <clang/Basic/Version.h>
 
 #include <iostream>
 
@@ -78,9 +79,11 @@ std::unique_ptr<ct::CTExport> createBinaryExport(llvm::StringRef const fileName,
 }
 
 int main(int argc, const char *argv[]) {
+	llvm::outs() << clang::getClangToolFullVersion("CppTool - clang") << "\n";
+
     clang::tooling::CommonOptionsParser options(argc, argv, toolCat);
     clang::tooling::ClangTool tool(options.getCompilations(), options.getSourcePathList());
-
+		
 	{
 		//Ensure binary export directory is a directory and exists
 		using namespace llvm::sys;
@@ -108,5 +111,8 @@ int main(int argc, const char *argv[]) {
 
 	llvm::outs().flush();
 
-	return tool.run(ct::buildActionFactory(&createBinaryExport).get());
+	return tool.run(ct::buildActionFactory(
+		&createBinaryExport, 
+		ct::createInputIdSet(options.getSourcePathList(), tool.getFiles())
+	).get());
 }

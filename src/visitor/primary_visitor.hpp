@@ -4,15 +4,23 @@
 #define CPPTOOL_PRIMARY_VISITOR_HPP
 
 #include <clang/AST/RecursiveASTVisitor.h>
+#include <set>
+#include <functional>
 
 #include "core/runtime_context.hpp"
+#include "core/ref_util.template.hpp"
 
 namespace ct {
+	template<typename T>
+	using RefSet = std::set<std::reference_wrapper<T>>;
+
     class PrimaryVisitor : public clang::RecursiveASTVisitor<PrimaryVisitor> {
+
         RuntimeContext context;
         clang::FileID primaryFileId;
+		RefSet<llvm::sys::fs::UniqueID const> const &inputFiles;
     public:
-        PrimaryVisitor(RuntimeContext &&context);
+		PrimaryVisitor(RuntimeContext &&context, RefSet<llvm::sys::fs::UniqueID const> const &inputFiles);
 
         bool VisitFieldDecl(clang::FieldDecl *D);
 
@@ -35,7 +43,7 @@ namespace ct {
     private:
         void exportIncludes();
 
-        inline bool declaredInMain(const clang::Decl *D) const;
+        inline bool shouldTraverse(const clang::Decl *D) const;
 
         inline CTExport &out() const;
     };

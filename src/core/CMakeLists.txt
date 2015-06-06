@@ -5,6 +5,8 @@ set(SRCS
     clang_interface_action.cpp
     clang_interface_consumer.cpp
     clang_interface.hpp
+    
+    ref_util.template.hpp
     )
 
 add_library(core STATIC ${SRCS})

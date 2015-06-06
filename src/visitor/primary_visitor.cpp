@@ -1,9 +1,10 @@
 #include "visitor/primary_visitor.hpp"
 
 namespace ct {
-    PrimaryVisitor::PrimaryVisitor(RuntimeContext &&context)
+	PrimaryVisitor::PrimaryVisitor(RuntimeContext &&context, RefSet<llvm::sys::fs::UniqueID const> const &inputFiles)
             : context(std::move(context)),
-              primaryFileId(context.getCompilationInstance().getSourceManager().getMainFileID()) {
+              primaryFileId(context.getCompilationInstance().getSourceManager().getMainFileID()),
+			  inputFiles(inputFiles) {
     }
 
     void PrimaryVisitor::exportIncludes() {
@@ -21,9 +22,14 @@ namespace ct {
         }
     }
 
-    bool PrimaryVisitor::declaredInMain(const clang::Decl *D) const {
+	bool PrimaryVisitor::shouldTraverse(const clang::Decl *D) const {
         auto &&sm = context.getCompilationInstance().getSourceManager();
-        return this->primaryFileId == sm.getFileID(D->getLocation());
+		auto &&id = sm.getFileID(D->getLocation());
+		auto &&entry = sm.getFileEntryForID(id);
+        return this->primaryFileId == id //Primary File
+			|| (entry != nullptr //Some files only exists in memory, do not attempt to figure out if its an input file!
+				&& inputFiles.find(entry->getUniqueID()) != inputFiles.cend() //Any file in input set
+			);
     }
 
     bool PrimaryVisitor::VisitFieldDecl(clang::FieldDecl *D) {
@@ -99,7 +105,7 @@ namespace ct {
         for (auto *Child : D->decls()) {
             if (!clang::isa<clang::BlockDecl>(Child) &&
                 !clang::isa<clang::CapturedDecl>(Child) &&
-                declaredInMain(Child)) {
+                shouldTraverse(Child)) {
 
                 if (!TraverseDecl(Child)) {
                     return false;
