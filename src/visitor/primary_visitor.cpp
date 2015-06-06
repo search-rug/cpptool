@@ -17,7 +17,7 @@ namespace ct {
 
 			if (includedBy.isInvalid()) continue; //The file is not included by anything
 
-			out().Include(*sm.getFileEntryForID(includedBy), *file);
+			out().Include(sm.getFileEntryForID(includedBy), file);
         }
     }
 
