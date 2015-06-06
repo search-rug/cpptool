@@ -44,8 +44,8 @@ namespace ct {
             auto &&fileEntry = fm.getFile(file);
             if (!fileEntry) { // sanity check, since a nullptr can easily result in corrupt data
                 llvm::outs() << "Unable to locate file: " << file << "\n";
-                llvm::outs().flush();
-                ::abort();
+				llvm::outs().flush();
+				llvm_unreachable("File has suddenly disappeared, failure to find one of the input files.");
             }
 			return std::cref(fileEntry->getUniqueID());
 		});

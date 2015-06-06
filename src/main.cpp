@@ -61,12 +61,13 @@ std::FILE *generateOutputFile(llvm::StringRef const fileName) {
 
 	if (err) {
 		llvm::errs() << "Error creating binary output fileName" << err.message() << "\n";
+		llvm_unreachable("Check the permissions on the output directory");
 	}
     
     std::FILE *ptr = std::fopen(tmpFile.c_str(), "w");
     if (!ptr) {
-        llvm::outs() << "fopen failed: " << std::strerror(errno) << "\n";
-        return nullptr;
+		llvm::outs() << "fopen failed: " << std::strerror(errno) << "\n";
+		llvm_unreachable("Check the permissions on the output directory");
     } else {
         return ptr;
     }

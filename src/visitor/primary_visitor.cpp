@@ -47,7 +47,10 @@ namespace ct {
             out().LocalVariable(D);
         } else if (D->isDefinedOutsideFunctionOrMethod()) {
             out().GlobalVariable(D);
-        }
+		} else {
+			// Are there other types of variable
+			llvm_unreachable("Unexpected variable type");
+		}
 
         return true;
     }
