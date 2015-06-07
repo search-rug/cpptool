@@ -84,16 +84,52 @@ namespace ct {
     bool PrimaryVisitor::VisitTypedefNameDecl(clang::TypedefNameDecl *D) {
         out().TypeDef(D);
         return true;
-    }
+	}
 
 	bool PrimaryVisitor::VisitFriendDecl(clang::FriendDecl *D) {
 		out().Friend(D);
 		return true;
 	}
 
+	bool PrimaryVisitor::VisitClassTemplateDecl(clang::ClassTemplateDecl *D) {
+		exportTemplateParameters<clang::TypeDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
+		out().Template(D);
+		return true;
+	}
+
+	bool PrimaryVisitor::VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *D) {
+		exportTemplateParameters<clang::NamedDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
+		out().Template(D);
+		return true;
+	}
+
+	bool PrimaryVisitor::VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *D) {
+		if (D->getTemplatedDecl()->getTypeForDecl() == nullptr) return true; //TODO: why does this happen?
+		exportTemplateParameters<clang::TypeDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
+		out().Template(D);
+		return true;
+	}
+
+	bool PrimaryVisitor::VisitVarTemplateDecl(clang::VarTemplateDecl *D) {
+		exportTemplateParameters<clang::NamedDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
+		out().Template(D);
+		return true;
+	}
+
     CTExport &PrimaryVisitor::out() const {
         return context.out();
-    }
+	}
+
+	template<typename T>
+	void PrimaryVisitor::exportTemplateParameters(clang::TemplateParameterList *parameters, T const *tmpl) {
+		for (auto it = parameters->begin(), end = parameters->end(); it != end; it++) {
+			auto named = *it;
+			// template parameters can be non-types too
+			if (clang::TemplateTypeParmDecl const *type_param = clang::dyn_cast<clang::TemplateTypeParmDecl>(named)) {
+				out().TemplateParam(type_param, tmpl);
+			}
+		}
+	}
 
     bool PrimaryVisitor::TraverseTranslationUnitDecl(clang::TranslationUnitDecl *D) {
         if (!clang::RecursiveASTVisitor<PrimaryVisitor>::WalkUpFromTranslationUnitDecl(D)) return false;
@@ -116,5 +152,5 @@ namespace ct {
         }
 
         return true;
-    }
+	}
 }

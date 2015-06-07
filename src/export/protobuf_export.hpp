@@ -36,6 +36,18 @@ namespace ct {
 		virtual void TypeDef(clang::TypedefNameDecl const *typeDefinition);
 
 		virtual void Friend(clang::FriendDecl const *friends);
+
+		virtual void TemplateParam(clang::TemplateTypeParmDecl const *param, clang::TypeDecl const *owner);
+
+		virtual void TemplateParam(clang::TemplateTypeParmDecl const *param, clang::NamedDecl const *owner);
+
+		virtual void Template(clang::ClassTemplateDecl const *Template);
+
+		virtual void Template(clang::FunctionTemplateDecl const *Template);
+
+		virtual void Template(clang::VarTemplateDecl const *Template);
+
+		virtual void Template(clang::TypeAliasTemplateDecl const *Template);
 	private:
 		struct file_deleter {
 			void operator()(std::FILE *file) {
@@ -47,6 +59,13 @@ namespace ct {
 		ProtobufOutput out;
 		TypeMapper mapper;
 
+		template<typename T>
+		void gatherSpecializationTypes(std::unordered_set<TypeMapper::PtrInt> &out, T &in);
+
+		template<> //FunctionTemplateDecl has its specializations stored differently from the others.
+		void gatherSpecializationTypes<clang::FunctionTemplateDecl const>(std::unordered_set<TypeMapper::PtrInt> &out,
+			clang::FunctionTemplateDecl const &in);
+
 		template<typename Callable>
 		inline void exportData(Callable c) {
 			ct::proto::Envelope env;
@@ -54,6 +73,23 @@ namespace ct {
 			out.writeMessage<ct::proto::Envelope>(env);
 		}
     };
+
+	template<typename T>
+	void ProtoBufExport::gatherSpecializationTypes(std::unordered_set<TypeMapper::PtrInt> &out, T &in) {
+		for (auto spec : in.specializations()) {
+			mapper.ResolveTemplateArgs(spec->getTemplateArgs(), out);
+		}
+	}
+
+	template<>
+	void ProtoBufExport::gatherSpecializationTypes<clang::FunctionTemplateDecl const>(
+		std::unordered_set<TypeMapper::PtrInt> &out,
+		clang::FunctionTemplateDecl const &in) {
+
+		for (auto spec : in.specializations()) {
+			mapper.ResolveTemplateArgs(*spec->getTemplateSpecializationArgs(), out);
+		}
+	}
 }
 
 #endif //CPPTOOL_PROTOBUF_EXPORT_HPP

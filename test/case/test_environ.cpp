@@ -48,3 +48,35 @@ class template_test {
 
 template<>
 class template_test<int>; //Test template declaration
+
+namespace template_specialization_test {
+    template<typename T, int N>
+    class test {
+    };
+    
+    template<>
+    class test<bool, 2> {
+    };
+    
+    template<>
+    class test<int, 2> {
+    };
+    
+    template<>
+    class test<int, 42> {
+    };
+    
+    template<typename P>
+    P test2();
+    
+    template<>
+    int test2<int>();
+    
+    template<typename Z>
+    using Ptr = Z*;
+    
+    using Ptr2 = Ptr<bool>;
+    
+    template<typename T>
+    T n = T(10);
+}

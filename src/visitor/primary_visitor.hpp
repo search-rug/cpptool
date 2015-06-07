@@ -38,10 +38,21 @@ namespace ct {
 
 		bool VisitFriendDecl(clang::FriendDecl *D);
 
+		bool VisitClassTemplateDecl(clang::ClassTemplateDecl *D);
+
+		bool VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *D);
+
+		bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *D);
+
+		bool VisitVarTemplateDecl(clang::VarTemplateDecl *D);
+
         bool TraverseTranslationUnitDecl(clang::TranslationUnitDecl *D);
 
     private:
         void exportIncludes();
+
+		template<typename T>
+		void exportTemplateParameters(clang::TemplateParameterList *parameters, T const *tmpl);
 
         inline bool shouldTraverse(const clang::Decl *D) const;
 

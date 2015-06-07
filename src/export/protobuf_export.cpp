@@ -131,7 +131,7 @@ namespace ct {
 			if (clang::TagDecl const *tag = clang::dyn_cast<clang::TagDecl>(friends->getDeclContext())) {
 				mapper.ResolveType(*fdef->mutable_origin(), clang::QualType(tag->getTypeForDecl(), 0));
 			} else {
-				assert("Unable to discover type for friend relation");
+				llvm_unreachable("Unable to discover type for friend relation");
 			}
 
 			if (friends->getFriendType()) {
@@ -141,4 +141,66 @@ namespace ct {
 			}
 		});
 	}
+
+	void ProtoBufExport::TemplateParam(clang::TemplateTypeParmDecl const *param, clang::TypeDecl const *owner) {
+		exportData([&](ct::proto::Envelope &env) {
+			auto parm = env.mutable_tmpl_param();
+			mapper.ResolveType(*parm->mutable_own_type(), clang::QualType(param->getTypeForDecl(), 0));
+			mapper.ResolveType(*parm->mutable_owner_type(), clang::QualType(owner->getTypeForDecl(), 0));
+		});
+	}
+
+	void ProtoBufExport::TemplateParam(clang::TemplateTypeParmDecl const *param, clang::NamedDecl const *owner) {
+		exportData([&](ct::proto::Envelope &env) {
+			auto parm = env.mutable_tmpl_param();
+			mapper.ResolveType(*parm->mutable_own_type(), clang::QualType(param->getTypeForDecl(), 0));
+			mapper.ResolveName(*parm->mutable_owner_name(), *owner);
+		});
+	}
+
+	void ProtoBufExport::Template(clang::ClassTemplateDecl const *Template) {
+		std::unordered_set<TypeMapper::PtrInt> specialized_types;
+		gatherSpecializationTypes<clang::ClassTemplateDecl const>(specialized_types, *Template);
+
+		exportData([&](ct::proto::Envelope &env) {
+			auto tmpl = env.mutable_tmpl();
+			mapper.ResolveType(*tmpl->mutable_attached_type(), clang::QualType(Template->getTemplatedDecl()->getTypeForDecl(), 0));
+			for (auto id : specialized_types) {
+				tmpl->add_specializations()->set_type_id(id);
+			}
+		});
+	}
+
+	void ProtoBufExport::Template(clang::FunctionTemplateDecl const *Template) {
+		std::unordered_set<TypeMapper::PtrInt> specialized_types;
+		gatherSpecializationTypes<clang::FunctionTemplateDecl const>(specialized_types, *Template);
+
+		exportData([&](ct::proto::Envelope &env) {
+			auto tmpl = env.mutable_tmpl();
+			mapper.ResolveName(*tmpl->mutable_attached_name(), *Template->getTemplatedDecl());
+			for (auto id : specialized_types) {
+				tmpl->add_specializations()->set_type_id(id);
+			}
+		});
+	}
+
+	void ProtoBufExport::Template(clang::VarTemplateDecl const *Template) {
+		std::unordered_set<TypeMapper::PtrInt> specialized_types;
+		gatherSpecializationTypes<clang::VarTemplateDecl const>(specialized_types, *Template);
+
+		exportData([&](ct::proto::Envelope &env) {
+			auto tmpl = env.mutable_tmpl();
+			mapper.ResolveName(*tmpl->mutable_attached_name(), *Template->getTemplatedDecl());
+			for (auto id : specialized_types) {
+				tmpl->add_specializations()->set_type_id(id);
+			}
+		});
+	}
+
+	void ProtoBufExport::Template(clang::TypeAliasTemplateDecl const *Template) {
+		Template->dumpColor();
+
+		//Does not have access to specialization information?
+	}
+
 }

@@ -31,10 +31,13 @@ namespace ct {
                 target.add_modifiers(ct::proto::Type_Modifier_POINTER);
                 selectedType = array->getElementType();
                 continue;
-            }
+			} else if (clang::TemplateTypeParmType const *tmpl = clang::dyn_cast<clang::TemplateTypeParmType>(typePtr)) {
+				//Template parameter. Desugaring causes unexpected nullptr dereference
+				break;
+			}
 
-            auto attemptedDesugar = selectedType.getSingleStepDesugaredType(
-                    clang.getASTContext()).getLocalUnqualifiedType();
+            auto attemptedDesugar = selectedType.getSingleStepDesugaredType(clang.getASTContext())
+				.getLocalUnqualifiedType();
             if (attemptedDesugar == selectedType) {
                 //No sugar left to remove, we've reached a concrete type.
                 break;
@@ -147,5 +150,13 @@ namespace ct {
 			break;
 #include "clang/AST/TypeNodes.def"
 		}
-    }
+	}
+
+	void TypeMapper::ResolveTemplateArgs(clang::TemplateArgumentList const &list, std::unordered_set<PtrInt> &out) {
+		for (auto arg : list.asArray()) {
+			if (arg.getKind() == clang::TemplateArgument::ArgKind::Type) {
+				out.emplace(GetTypeId(arg.getAsType()));
+			}
+		}
+	}
 }
