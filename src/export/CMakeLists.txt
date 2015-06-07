@@ -13,6 +13,7 @@ set(SRCS
     
     type_mapper.cpp
     type_mapper.hpp
+    type_mapper.template.hpp
     )
 
 add_library(export STATIC ${SRCS})

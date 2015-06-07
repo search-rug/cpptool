@@ -133,14 +133,19 @@ namespace ct {
 	}
 
     void TypeMapper::DetermineTypeDeclaration(ct::proto::TypeDefinition &def, clang::QualType type) {
-        if (clang::TypedefType const *tdef = clang::dyn_cast<clang::TypedefType>(type.getTypePtr())) {
-            ResolveName(*def.mutable_specifier(), *tdef->getDecl());
-            ResolveLocation(*def.mutable_location(), tdef->getDecl()->getSourceRange());
-        } else if (clang::TagType const *tag = clang::dyn_cast<clang::TagType>(type.getTypePtr())) {
-            ResolveName(*def.mutable_specifier(), *tag->getDecl());
-            ResolveLocation(*def.mutable_location(), tag->getDecl()->getSourceRange());
-        } else {
-            def.mutable_specifier()->set_name(type.getAsString());
-        }
+		using clang::Type;
+		auto typePtr = type.getTypePtr();
+		switch (typePtr->getTypeClass()) {
+#define ABSTRACT_TYPE(CLASS, BASE)
+#define TYPE(CLASS, BASE)													\
+		case Type::CLASS:													\
+			TypeMapperTemplate::mapType<clang::CLASS##Type>(		\
+				*this,														\
+				def,														\
+				static_cast<clang::CLASS##Type const &>(*typePtr)			\
+			);																\
+			break;
+#include "clang/AST/TypeNodes.def"
+		}
     }
 }

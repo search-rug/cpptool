@@ -44,4 +44,6 @@ namespace ct {
     };
 }
 
+#include "export/type_mapper.template.hpp"
+
 #endif //CPPTOOL_TYPE_MAPPER_HPP
