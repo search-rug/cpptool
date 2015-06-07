@@ -11,16 +11,16 @@
 #include "core/ref_util.template.hpp"
 
 namespace ct {
-	template<typename T>
-	using RefSet = std::set<std::reference_wrapper<T>>;
+    template<typename T>
+    using RefSet = std::set<std::reference_wrapper<T>>;
 
     class PrimaryVisitor : public clang::RecursiveASTVisitor<PrimaryVisitor> {
 
         RuntimeContext context;
         clang::FileID primaryFileId;
-		RefSet<llvm::sys::fs::UniqueID const> const &inputFiles;
+        RefSet<llvm::sys::fs::UniqueID const> const &inputFiles;
     public:
-		PrimaryVisitor(RuntimeContext &&context, RefSet<llvm::sys::fs::UniqueID const> const &inputFiles);
+        PrimaryVisitor(RuntimeContext &&context, RefSet<llvm::sys::fs::UniqueID const> const &inputFiles);
 
         bool VisitFieldDecl(clang::FieldDecl *D);
 
@@ -34,25 +34,25 @@ namespace ct {
 
         bool VisitRecordDecl(clang::RecordDecl *D);
 
-		bool VisitTypedefNameDecl(clang::TypedefNameDecl *D);
+        bool VisitTypedefNameDecl(clang::TypedefNameDecl *D);
 
-		bool VisitFriendDecl(clang::FriendDecl *D);
+        bool VisitFriendDecl(clang::FriendDecl *D);
 
-		bool VisitClassTemplateDecl(clang::ClassTemplateDecl *D);
+        bool VisitClassTemplateDecl(clang::ClassTemplateDecl *D);
 
-		bool VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *D);
+        bool VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *D);
 
-		bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *D);
+        bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *D);
 
-		bool VisitVarTemplateDecl(clang::VarTemplateDecl *D);
+        bool VisitVarTemplateDecl(clang::VarTemplateDecl *D);
 
         bool TraverseTranslationUnitDecl(clang::TranslationUnitDecl *D);
 
     private:
         void exportIncludes();
 
-		template<typename T>
-		void exportTemplateParameters(clang::TemplateParameterList *parameters, T const *tmpl);
+        template<typename T>
+        void exportTemplateParameters(clang::TemplateParameterList *parameters, T const *tmpl);
 
         inline bool shouldTraverse(const clang::Decl *D) const;
 

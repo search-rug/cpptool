@@ -1,10 +1,10 @@
 #include "visitor/primary_visitor.hpp"
 
 namespace ct {
-	PrimaryVisitor::PrimaryVisitor(RuntimeContext &&context, RefSet<llvm::sys::fs::UniqueID const> const &inputFiles)
+    PrimaryVisitor::PrimaryVisitor(RuntimeContext &&context, RefSet<llvm::sys::fs::UniqueID const> const &inputFiles)
             : context(std::move(context)),
               primaryFileId(context.getCompilationInstance().getSourceManager().getMainFileID()),
-			  inputFiles(inputFiles) {
+              inputFiles(inputFiles) {
     }
 
     void PrimaryVisitor::exportIncludes() {
@@ -15,20 +15,21 @@ namespace ct {
             auto &&fileId = sm.translateFile(file);
             auto &&includedBy = sm.getFileID(sm.getIncludeLoc(fileId));
 
-			if (includedBy.isInvalid()) continue; //The file is not included by anything
+            if (includedBy.isInvalid()) continue; //The file is not included by anything
 
-			out().Include(sm.getFileEntryForID(includedBy), file);
+            out().Include(sm.getFileEntryForID(includedBy), file);
         }
     }
 
-	bool PrimaryVisitor::shouldTraverse(const clang::Decl *D) const {
+    bool PrimaryVisitor::shouldTraverse(const clang::Decl *D) const {
         auto &&sm = context.getCompilationInstance().getSourceManager();
-		auto &&id = sm.getFileID(D->getLocation());
-		auto &&entry = sm.getFileEntryForID(id);
+        auto &&id = sm.getFileID(D->getLocation());
+        auto &&entry = sm.getFileEntryForID(id);
         return this->primaryFileId == id //Primary File
-			|| (entry != nullptr //Some files only exists in memory, do not attempt to figure out if its an input file!
-				&& inputFiles.find(entry->getUniqueID()) != inputFiles.cend() //Any file in input set
-			);
+               ||
+               (entry != nullptr //Some files only exists in memory, do not attempt to figure out if its an input file!
+                && inputFiles.find(entry->getUniqueID()) != inputFiles.cend() //Any file in input set
+               );
     }
 
     bool PrimaryVisitor::VisitFieldDecl(clang::FieldDecl *D) {
@@ -47,10 +48,10 @@ namespace ct {
             out().LocalVariable(D);
         } else if (D->isDefinedOutsideFunctionOrMethod()) {
             out().GlobalVariable(D);
-		} else {
-			// Are there other types of variable
-			llvm_unreachable("Unexpected variable type");
-		}
+        } else {
+            // Are there other types of variable
+            llvm_unreachable("Unexpected variable type");
+        }
 
         return true;
     }
@@ -84,52 +85,52 @@ namespace ct {
     bool PrimaryVisitor::VisitTypedefNameDecl(clang::TypedefNameDecl *D) {
         out().TypeDef(D);
         return true;
-	}
+    }
 
-	bool PrimaryVisitor::VisitFriendDecl(clang::FriendDecl *D) {
-		out().Friend(D);
-		return true;
-	}
+    bool PrimaryVisitor::VisitFriendDecl(clang::FriendDecl *D) {
+        out().Friend(D);
+        return true;
+    }
 
-	bool PrimaryVisitor::VisitClassTemplateDecl(clang::ClassTemplateDecl *D) {
-		exportTemplateParameters<clang::TypeDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
-		out().Template(D);
-		return true;
-	}
+    bool PrimaryVisitor::VisitClassTemplateDecl(clang::ClassTemplateDecl *D) {
+        exportTemplateParameters<clang::TypeDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
+        out().Template(D);
+        return true;
+    }
 
-	bool PrimaryVisitor::VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *D) {
-		exportTemplateParameters<clang::NamedDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
-		out().Template(D);
-		return true;
-	}
+    bool PrimaryVisitor::VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *D) {
+        exportTemplateParameters<clang::NamedDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
+        out().Template(D);
+        return true;
+    }
 
-	bool PrimaryVisitor::VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *D) {
-		if (D->getTemplatedDecl()->getTypeForDecl() == nullptr) return true; //TODO: why does this happen?
-		exportTemplateParameters<clang::TypeDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
-		out().Template(D);
-		return true;
-	}
+    bool PrimaryVisitor::VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *D) {
+        if (D->getTemplatedDecl()->getTypeForDecl() == nullptr) return true; //TODO: why does this happen?
+        exportTemplateParameters<clang::TypeDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
+        out().Template(D);
+        return true;
+    }
 
-	bool PrimaryVisitor::VisitVarTemplateDecl(clang::VarTemplateDecl *D) {
-		exportTemplateParameters<clang::NamedDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
-		out().Template(D);
-		return true;
-	}
+    bool PrimaryVisitor::VisitVarTemplateDecl(clang::VarTemplateDecl *D) {
+        exportTemplateParameters<clang::NamedDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
+        out().Template(D);
+        return true;
+    }
 
     CTExport &PrimaryVisitor::out() const {
         return context.out();
-	}
+    }
 
-	template<typename T>
-	void PrimaryVisitor::exportTemplateParameters(clang::TemplateParameterList *parameters, T const *tmpl) {
-		for (auto it = parameters->begin(), end = parameters->end(); it != end; it++) {
-			auto named = *it;
-			// template parameters can be non-types too
-			if (clang::TemplateTypeParmDecl const *type_param = clang::dyn_cast<clang::TemplateTypeParmDecl>(named)) {
-				out().TemplateParam(type_param, tmpl);
-			}
-		}
-	}
+    template<typename T>
+    void PrimaryVisitor::exportTemplateParameters(clang::TemplateParameterList *parameters, T const *tmpl) {
+        for (auto it = parameters->begin(), end = parameters->end(); it != end; it++) {
+            auto named = *it;
+            // template parameters can be non-types too
+            if (clang::TemplateTypeParmDecl const *type_param = clang::dyn_cast<clang::TemplateTypeParmDecl>(named)) {
+                out().TemplateParam(type_param, tmpl);
+            }
+        }
+    }
 
     bool PrimaryVisitor::TraverseTranslationUnitDecl(clang::TranslationUnitDecl *D) {
         if (!clang::RecursiveASTVisitor<PrimaryVisitor>::WalkUpFromTranslationUnitDecl(D)) return false;
@@ -152,5 +153,5 @@ namespace ct {
         }
 
         return true;
-	}
+    }
 }

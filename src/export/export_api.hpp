@@ -11,7 +11,7 @@ namespace ct {
         //Names use PascalCase to avoid using keywords
 
         //HANDLES: #include
-		virtual void Include(clang::FileEntry const *origin, clang::FileEntry const *target) = 0;
+        virtual void Include(clang::FileEntry const *origin, clang::FileEntry const *target) = 0;
 
         //HANDLES: class/struct/union
         virtual void Record(clang::RecordDecl const *record) = 0;
@@ -37,25 +37,29 @@ namespace ct {
         //HANDLES: type remapping
         virtual void TypeDef(clang::TypedefNameDecl const *typeDefinition) = 0;
 
-		//HANDLES: friend relation
-		virtual void Friend(clang::FriendDecl const *friends) = 0;
+        //HANDLES: friend relation
+        virtual void Friend(clang::FriendDecl const *friends) = 0;
 
-		//HANDLES: template parameter
-		//template parameters can be either attached to a type (record or alias)
-		virtual void TemplateParam(clang::TemplateTypeParmDecl const *param, clang::TypeDecl const *owner) = 0;
-		//or attached to a named decl (function/variable)
-		virtual void TemplateParam(clang::TemplateTypeParmDecl const *param, clang::NamedDecl const *owner) = 0;
+        //HANDLES: template parameter
+        //template parameters can be either attached to a type (record or alias)
+        virtual void TemplateParam(clang::TemplateTypeParmDecl const *param, clang::TypeDecl const *owner) = 0;
 
-		//HANDLES: template
-		//All types of template are handled seperately, no cleaner way of doing this
-		//template<typename T> class X;
-		virtual void Template(clang::ClassTemplateDecl const *Template) = 0;
-		//template<typename T> T func(int a);
-		virtual void Template(clang::FunctionTemplateDecl const *Template) = 0;
-		//template<typename T> T n = T(10);
-		virtual void Template(clang::VarTemplateDecl const *Template) = 0;
-		//template<typename T> using Test = T;
-		virtual void Template(clang::TypeAliasTemplateDecl const *Template) = 0;
+        //or attached to a named decl (function/variable)
+        virtual void TemplateParam(clang::TemplateTypeParmDecl const *param, clang::NamedDecl const *owner) = 0;
+
+        //HANDLES: template
+        //All types of template are handled seperately, no cleaner way of doing this
+        //template<typename T> class X;
+        virtual void Template(clang::ClassTemplateDecl const *Template) = 0;
+
+        //template<typename T> T func(int a);
+        virtual void Template(clang::FunctionTemplateDecl const *Template) = 0;
+
+        //template<typename T> T n = T(10);
+        virtual void Template(clang::VarTemplateDecl const *Template) = 0;
+
+        //template<typename T> using Test = T;
+        virtual void Template(clang::TypeAliasTemplateDecl const *Template) = 0;
     };
 }
 

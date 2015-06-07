@@ -16,36 +16,37 @@
 
 namespace ct {
     class TypeMapper {
-	public:
-		using PtrInt = ::google::protobuf::uint64;
+    public:
+        using PtrInt = ::google::protobuf::uint64;
 
-		TypeMapper(ProtobufOutput &typeOutput, clang::CompilerInstance const &clang);
+        TypeMapper(ProtobufOutput &typeOutput, clang::CompilerInstance const &clang);
 
-		void ResolveType(ct::proto::Type &target, clang::QualType type);
+        void ResolveType(ct::proto::Type &target, clang::QualType type);
 
-		void ResolveLocation(ct::proto::SourceRange &range, clang::SourceRange clangRange);
+        void ResolveLocation(ct::proto::SourceRange &range, clang::SourceRange clangRange);
 
-		void ResolveName(ct::proto::ScopedName &name, clang::NamedDecl const &decl);
+        void ResolveName(ct::proto::ScopedName &name, clang::NamedDecl const &decl);
 
-		void ResolveContext(ct::proto::ScopedName &name, clang::DeclContext const *context);
+        void ResolveContext(ct::proto::ScopedName &name, clang::DeclContext const *context);
 
-		void ResolveTemplateArgs(clang::TemplateArgumentList const &list, std::unordered_set<PtrInt> &out);
-	private:
-		static_assert(
-			sizeof(PtrInt) >= sizeof(clang::Type *),
-			"Container value must be large enough to contain any pointer."
-			);
+        void ResolveTemplateArgs(clang::TemplateArgumentList const &list, std::unordered_set<PtrInt> &out);
 
-		ProtobufOutput &typeOutput;
-		clang::CompilerInstance const &clang;
-		std::unordered_set<PtrInt> seenTypes;
-		std::unordered_map<PtrInt, std::string> emittedContexts;
+    private:
+        static_assert(
+                sizeof(PtrInt) >= sizeof(clang::Type *),
+                "Container value must be large enough to contain any pointer."
+        );
 
-		PtrInt GetTypeId(clang::QualType type);
+        ProtobufOutput &typeOutput;
+        clang::CompilerInstance const &clang;
+        std::unordered_set<PtrInt> seenTypes;
+        std::unordered_map<PtrInt, std::string> emittedContexts;
 
-		void GetContext(ct::proto::ScopedName &name, clang::CXXRecordDecl const *lambdaContext);
+        PtrInt GetTypeId(clang::QualType type);
 
-		void DetermineTypeDeclaration(ct::proto::TypeDefinition &def, clang::QualType type);
+        void GetContext(ct::proto::ScopedName &name, clang::CXXRecordDecl const *lambdaContext);
+
+        void DetermineTypeDeclaration(ct::proto::TypeDefinition &def, clang::QualType type);
     };
 }
 

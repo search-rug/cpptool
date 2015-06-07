@@ -24,7 +24,7 @@ namespace ct {
             out << "::";
 
             if (clang::FunctionDecl const *func = clang::dyn_cast<clang::FunctionDecl>(decl)) {
-				getFunctionName(out, *func);
+                getFunctionName(out, *func);
                 out << '(';
                 unpackParameterRepr(out, func->params());
                 out << ')';
@@ -48,14 +48,14 @@ namespace ct {
             }
         }
 
-		void Internal::getFunctionName(std::ostringstream &out, clang::FunctionDecl const &decl) {
-			auto name = decl.getDeclName();
-			if (name.isIdentifier()) {
-				out << name.getAsIdentifierInfo()->getName().str();
-			} else {
-				out << name.getAsString();
-			}
-		}
+        void Internal::getFunctionName(std::ostringstream &out, clang::FunctionDecl const &decl) {
+            auto name = decl.getDeclName();
+            if (name.isIdentifier()) {
+                out << name.getAsIdentifierInfo()->getName().str();
+            } else {
+                out << name.getAsString();
+            }
+        }
 
         std::string getParameterRepr(clang::FunctionDecl::param_const_range params) {
             std::ostringstream out;
@@ -65,13 +65,13 @@ namespace ct {
             return out.str();
         }
 
-		std::string getFunctionName(clang::FunctionDecl const &func) {
-			std::ostringstream out;
-			Internal::getFunctionName(out, func);
-			out << "(";
-			Internal::unpackParameterRepr(out, func.params());
-			out << ")";
-			return out.str();
+        std::string getFunctionName(clang::FunctionDecl const &func) {
+            std::ostringstream out;
+            Internal::getFunctionName(out, func);
+            out << "(";
+            Internal::unpackParameterRepr(out, func.params());
+            out << ")";
+            return out.str();
         }
 
         std::string getFunctionName(clang::FunctionDecl const *func) {
