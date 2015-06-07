@@ -26,9 +26,9 @@ namespace ct {
 		output.WriteVarint32(msg.ByteSize());
 		msg.SerializeToCodedStream(&output);
 		//TODO: validate return bool
-#ifndef NDEBUG
+#ifdef CPPTOOL_ENABLE_PROTOBUF_DUMP
 		msg.PrintDebugString();
-#endif //NDEBUG
+#endif //CPPTOOL_ENABLE_PROTOBUF_DUMP
 	}
 }
 
