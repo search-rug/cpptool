@@ -24,6 +24,8 @@ namespace ct {
             static void unpackIdentifier(std::ostringstream &out, clang::Decl const *decl);
 
             static void unpackParameterRepr(std::ostringstream &out, clang::FunctionDecl::param_const_range params);
+
+			static void getFunctionName(std::ostringstream &out, clang::FunctionDecl const &decl);
         };
     }
 }
