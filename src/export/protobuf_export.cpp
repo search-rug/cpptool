@@ -160,7 +160,7 @@ namespace ct {
 
 	void ProtoBufExport::Template(clang::ClassTemplateDecl const *Template) {
 		std::unordered_set<TypeMapper::PtrInt> specialized_types;
-		gatherSpecializationTypes<clang::ClassTemplateDecl const>(specialized_types, *Template);
+		gatherSpecializationTypes<clang::ClassTemplateDecl>(specialized_types, *Template);
 
 		exportData([&](ct::proto::Envelope &env) {
 			auto tmpl = env.mutable_tmpl();
@@ -173,7 +173,7 @@ namespace ct {
 
 	void ProtoBufExport::Template(clang::FunctionTemplateDecl const *Template) {
 		std::unordered_set<TypeMapper::PtrInt> specialized_types;
-		gatherSpecializationTypes<clang::FunctionTemplateDecl const>(specialized_types, *Template);
+		gatherSpecializationTypes<clang::FunctionTemplateDecl>(specialized_types, *Template);
 
 		exportData([&](ct::proto::Envelope &env) {
 			auto tmpl = env.mutable_tmpl();
@@ -186,7 +186,7 @@ namespace ct {
 
 	void ProtoBufExport::Template(clang::VarTemplateDecl const *Template) {
 		std::unordered_set<TypeMapper::PtrInt> specialized_types;
-		gatherSpecializationTypes<clang::VarTemplateDecl const>(specialized_types, *Template);
+		gatherSpecializationTypes<clang::VarTemplateDecl>(specialized_types, *Template);
 
 		exportData([&](ct::proto::Envelope &env) {
 			auto tmpl = env.mutable_tmpl();

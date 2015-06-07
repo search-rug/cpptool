@@ -60,11 +60,7 @@ namespace ct {
 		TypeMapper mapper;
 
 		template<typename T>
-		void gatherSpecializationTypes(std::unordered_set<TypeMapper::PtrInt> &out, T &in);
-
-		template<> //FunctionTemplateDecl has its specializations stored differently from the others.
-		void gatherSpecializationTypes<clang::FunctionTemplateDecl const>(std::unordered_set<TypeMapper::PtrInt> &out,
-			clang::FunctionTemplateDecl const &in);
+		void gatherSpecializationTypes(std::unordered_set<TypeMapper::PtrInt> &out, T const &in);
 
 		template<typename Callable>
 		inline void exportData(Callable c) {
@@ -75,14 +71,14 @@ namespace ct {
     };
 
 	template<typename T>
-	void ProtoBufExport::gatherSpecializationTypes(std::unordered_set<TypeMapper::PtrInt> &out, T &in) {
+	inline void ProtoBufExport::gatherSpecializationTypes(std::unordered_set<TypeMapper::PtrInt> &out, T const &in) {
 		for (auto spec : in.specializations()) {
 			mapper.ResolveTemplateArgs(spec->getTemplateArgs(), out);
 		}
 	}
 
 	template<>
-	void ProtoBufExport::gatherSpecializationTypes<clang::FunctionTemplateDecl const>(
+	inline void ProtoBufExport::gatherSpecializationTypes<clang::FunctionTemplateDecl>(
 		std::unordered_set<TypeMapper::PtrInt> &out,
 		clang::FunctionTemplateDecl const &in) {
 
