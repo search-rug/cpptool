@@ -64,7 +64,7 @@ std::FILE *generateOutputFile(llvm::StringRef const fileName) {
         llvm_unreachable("Check the permissions on the output directory");
     }
 
-    std::FILE *ptr = std::fopen(tmpFile.c_str(), "w");
+    std::FILE *ptr = std::fopen(tmpFile.c_str(), "wb");
     if (!ptr) {
         llvm::outs() << "fopen failed: " << std::strerror(errno) << "\n";
         llvm_unreachable("Check the permissions on the output directory");
