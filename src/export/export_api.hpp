@@ -60,6 +60,9 @@ namespace ct {
 
         //template<typename T> using Test = T;
         virtual void Template(clang::TypeAliasTemplateDecl const *Template) = 0;
+
+		//change in input file
+		virtual void InputChanged(clang::FileEntry const *file) = 0;
     };
 }
 

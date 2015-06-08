@@ -141,10 +141,23 @@ namespace ct {
         //declarations in included files at the source.
         //This also avoids unnecessary traversal of the AST.
 
+		//Used to keep track of the file that is being read
+		auto &&sm = context.getCompilationInstance().getSourceManager();
+		clang::FileID currentFile;
+
         for (auto *Child : D->decls()) {
             if (!clang::isa<clang::BlockDecl>(Child) &&
                 !clang::isa<clang::CapturedDecl>(Child) &&
                 shouldTraverse(Child)) {
+
+				//Check if the file being read has changed, emit InputChanged if it has.
+				auto fileId = sm.getFileID(Child->getLocation());
+				if (currentFile != fileId) {
+					currentFile = fileId;
+					auto entry = sm.getFileEntryForID(fileId);
+					if (entry == nullptr) ::abort(); //Sanity check
+					out().InputChanged(entry);
+				}
 
                 if (!TraverseDecl(Child)) {
                     return false;
