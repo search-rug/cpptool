@@ -52,7 +52,10 @@ namespace ct {
     private:
         struct file_deleter {
             void operator()(std::FILE *file) {
-                std::fclose(file); //TODO: track delete
+				if (std::ferror(file)) {
+					llvm::errs() << "I/O error while writing: " << std::strerror(errno) << "\n";
+				}
+                std::fclose(file);
             }
         };
 
