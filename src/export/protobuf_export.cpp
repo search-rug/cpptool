@@ -33,6 +33,16 @@ namespace ct {
                 rec = env.mutable_record();
             }
 
+            if (record->isClass()) {
+                rec->set_variant(ct::proto::RecordDef_Variant_CLASS);
+            } else if (record->isStruct()) {
+                rec->set_variant(ct::proto::RecordDef_Variant_STRUCT);
+            } else if (record->isUnion()) {
+                rec->set_variant(ct::proto::RecordDef_Variant_UNION);
+            } else {
+                rec->set_variant(ct::proto::RecordDef_Variant_UNKNOWN);
+            }
+
             mapper.ResolveType(*rec->mutable_internal_type(), clang::QualType(record->getTypeForDecl(), 0));
             mapper.ResolveName(*rec->mutable_name(), *record);
             if (record->hasBody()) {
