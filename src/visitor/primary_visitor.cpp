@@ -25,8 +25,7 @@ namespace ct {
         auto &&sm = context.getCompilationInstance().getSourceManager();
         auto &&id = sm.getFileID(D->getLocation());
         auto &&entry = sm.getFileEntryForID(id);
-        return this->primaryFileId == id //Primary File
-               ||
+        return this->primaryFileId == id || //Primary File
                (entry != nullptr //Some files only exists in memory, do not attempt to figure out if its an input file!
                 && inputFiles.find(entry->getUniqueID()) != inputFiles.cend() //Any file in input set
                );
@@ -93,27 +92,27 @@ namespace ct {
     }
 
     bool PrimaryVisitor::VisitClassTemplateDecl(clang::ClassTemplateDecl *D) {
-        exportTemplateParameters<clang::TypeDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
         out().Template(D);
+        exportTemplateParameters<clang::TypeDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
         return true;
     }
 
     bool PrimaryVisitor::VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *D) {
-        exportTemplateParameters<clang::NamedDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
         out().Template(D);
+        exportTemplateParameters<clang::NamedDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
         return true;
     }
 
     bool PrimaryVisitor::VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *D) {
         if (D->getTemplatedDecl()->getTypeForDecl() == nullptr) return true; //TODO: why does this happen?
-        exportTemplateParameters<clang::TypeDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
         out().Template(D);
+        exportTemplateParameters<clang::TypeDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
         return true;
     }
 
     bool PrimaryVisitor::VisitVarTemplateDecl(clang::VarTemplateDecl *D) {
-        exportTemplateParameters<clang::NamedDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
         out().Template(D);
+        exportTemplateParameters<clang::NamedDecl>(D->getTemplateParameters(), D->getTemplatedDecl());
         return true;
     }
 
