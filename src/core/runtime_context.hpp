@@ -18,10 +18,21 @@ namespace ct {
 
         RuntimeContext(RuntimeContext &&orig);
 
+        /**
+         * Exporting interface used for processing the data
+         */
         CTExport &out() const;
 
+        /**
+         * The ASTContext provides access to variables specific to the current compilation run, including lookup
+         * methods and ways of retrieving language built-in types.
+         */
         clang::ASTContext const &context() const;
 
+        /**
+         * The compilation context contains all the Clang and LLVM subsystems used in the parsing and building
+         * process.
+         */
         clang::CompilerInstance const &getCompilationInstance() const;
     };
 }

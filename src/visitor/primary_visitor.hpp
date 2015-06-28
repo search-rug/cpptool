@@ -51,6 +51,9 @@ namespace ct {
     private:
         void exportIncludes();
 
+        /**
+         * Templates declarations all have separate but similar structures, using a template avoid duplication.
+         */
         template<typename T>
         void exportTemplateParameters(clang::TemplateParameterList *parameters, T const *tmpl);
 

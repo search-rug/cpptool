@@ -52,6 +52,10 @@ namespace ct {
         virtual void InputChanged(clang::FileEntry const *file);
 
     private:
+        /**
+         * Since the file pointer is stored inside of a unique pointer, this utility deleter ensures
+         * the file is correctly closed/flushed once the exporter is destructed.
+         */
         struct file_deleter {
             void operator()(std::FILE *file) {
                 if (std::ferror(file)) {
@@ -65,6 +69,11 @@ namespace ct {
         ProtobufOutput out;
         TypeMapper mapper;
 
+        /**
+         * All template declarations have the same methods and ways of accessing the types used in template
+         * specializations, but none of them use a common type. This template makes gives a consistent way
+         * of getting the specialization types without recreating the method for each declaration type.
+         */
         template<typename T>
         void gatherSpecializationTypes(std::unordered_set<TypeMapper::PtrInt> &out, T const &in);
 
