@@ -211,13 +211,13 @@ namespace ct {
         Template->dumpColor();
 
         //Does not have access to specialization information?
-	}
+    }
 
-	void ProtoBufExport::InputChanged(clang::FileEntry const *file) {
-		exportData([&](ct::proto::Envelope &env) {
-			auto input = env.mutable_input();
-			input->set_file_path(file->getName());
-		});
-	}
+    void ProtoBufExport::InputChanged(clang::FileEntry const *file) {
+        exportData([&](ct::proto::Envelope &env) {
+            auto input = env.mutable_input();
+            input->set_file_path(file->getName());
+        });
+    }
 
 }

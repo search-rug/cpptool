@@ -49,13 +49,14 @@ namespace ct {
 
         virtual void Template(clang::TypeAliasTemplateDecl const *Template);
 
-		virtual void InputChanged(clang::FileEntry const *file);
+        virtual void InputChanged(clang::FileEntry const *file);
+
     private:
         struct file_deleter {
             void operator()(std::FILE *file) {
-				if (std::ferror(file)) {
-					llvm::errs() << "I/O error while writing: " << std::strerror(errno) << "\n";
-				}
+                if (std::ferror(file)) {
+                    llvm::errs() << "I/O error while writing: " << std::strerror(errno) << "\n";
+                }
                 std::fclose(file);
             }
         };

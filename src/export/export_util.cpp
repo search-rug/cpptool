@@ -3,6 +3,14 @@
 namespace ct {
     namespace Export {
 
+        struct Internal {
+            static void unpackIdentifier(std::ostringstream &out, clang::Decl const *decl);
+
+            static void unpackParameterRepr(std::ostringstream &out, clang::FunctionDecl::param_const_range params);
+
+            static void getFunctionName(std::ostringstream &out, clang::FunctionDecl const &decl);
+        };
+
         std::string getFullIdentifier(clang::Decl *decl) {
             std::ostringstream out;
             Internal::unpackIdentifier(out, decl);
@@ -16,7 +24,8 @@ namespace ct {
         void Internal::unpackIdentifier(std::ostringstream &out, clang::Decl const *decl) {
             using clang::Decl;
 
-            if (decl->getKind() == Decl::Kind::TranslationUnit) return;
+            if (decl->getKind() == Decl::Kind::TranslationUnit)
+                return;
 
             //Output parent context
             Internal::unpackIdentifier(out, clang::Decl::castFromDeclContext(decl->getDeclContext()));
