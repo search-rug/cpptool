@@ -19,6 +19,8 @@ static cl::opt<std::string> OutputDirectory("out",
                                             cl::cat(toolCat)
 );
 
+using DirectoryString = llvm::SmallString<1024>;
+
 inline char os_filesep() {
 #ifdef _WIN32
 	return '\\';
@@ -27,8 +29,8 @@ inline char os_filesep() {
 #endif //_WIN32
 }
 
-llvm::SmallString<1024> getAbsoluteOutputPath() {
-    llvm::SmallString<1024> tmp;
+DirectoryString getAbsoluteOutputPath() {
+    DirectoryString tmp;
     tmp.assign(OutputDirectory);
     llvm::sys::fs::make_absolute(tmp);
 
@@ -40,9 +42,9 @@ llvm::SmallString<1024> getAbsoluteOutputPath() {
     return tmp;
 }
 
-llvm::SmallString<1024> &cachedAbsolutePath() {
+DirectoryString &cachedAbsolutePath() {
     // Cached as a static variable since it cannot change once we reach this point
-    static llvm::SmallString<1024> outputDirectory = getAbsoluteOutputPath();
+    static DirectoryString outputDirectory = getAbsoluteOutputPath();
     return outputDirectory;
 }
 
@@ -56,7 +58,7 @@ std::FILE *generateOutputFile(llvm::StringRef const fileName) {
     Twine const nonUniqueFile = Twine(cachedAbsolutePath()).concat(targetFileName).concat("-%%-%%-%%-%%.pb");
 
     //Ensure the name is unique.
-    llvm::SmallString<1024> tmpFile;
+    DirectoryString tmpFile;
     auto err = fs::createUniqueFile(nonUniqueFile, tmpFile);
 
     if (err) {
@@ -103,7 +105,7 @@ int main(int argc, const char *argv[]) {
             }
         }
 
-        llvm::SmallString<1024> tmpFile;
+        DirectoryString tmpFile;
         directory.toVector(tmpFile);
         fs::make_absolute(tmpFile);
         llvm::outs() << "Using output directory: \"" << tmpFile << "\"\n";
