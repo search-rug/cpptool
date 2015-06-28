@@ -31,8 +31,7 @@ namespace ct {
                 target.add_modifiers(ct::proto::Type_Modifier_POINTER);
                 selectedType = array->getElementType();
                 continue;
-            } else if (clang::TemplateTypeParmType const *tmpl = clang::dyn_cast<clang::TemplateTypeParmType>(
-                    typePtr)) {
+            } else if (clang::isa<clang::TemplateTypeParmType>(typePtr)) {
                 //Template parameter. Desugaring causes unexpected nullptr dereference
                 break;
             }
