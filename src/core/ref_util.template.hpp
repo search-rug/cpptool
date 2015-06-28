@@ -3,16 +3,18 @@
 
 #include <functional>
 
-/*
-	C++ STD doesn't define a std::less overload for reference wrappers, so we define it here.
-*/
-template<typename T>
-struct std::less<std::reference_wrapper<T> > {
-    std::less<T> compare = std::less<T>();
+/**
+ * C++ STD doesn't define a std::less overload for reference wrappers, so we define it here.
+ */
+namespace std {
+    template<typename T>
+    struct less<std::reference_wrapper<T>> {
+        less<T> compare = less<T>();
 
-    bool operator()(const std::reference_wrapper<T> &ref1, const std::reference_wrapper<T> &ref2) const {
-        return compare(ref1, ref2);
-    }
-};
+        bool operator()(const std::reference_wrapper<T> &ref1, const std::reference_wrapper<T> &ref2) const {
+            return compare(ref1, ref2);
+        }
+    };
+} //std
 
 #endif //CPPTOOL_CORE_REFUTIL_HPP
