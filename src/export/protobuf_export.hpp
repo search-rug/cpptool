@@ -52,6 +52,8 @@ namespace ct {
         virtual void InputChanged(clang::FileEntry const *file);
 
     private:
+        ct::proto::Access mapAccess(clang::AccessSpecifier access);
+
         /**
          * Since the file pointer is stored inside of a unique pointer, this utility deleter ensures
          * the file is correctly closed/flushed once the exporter is destructed.

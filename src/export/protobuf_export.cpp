@@ -22,12 +22,14 @@ namespace ct {
         exportData([&](ct::proto::Envelope &env) {
             ct::proto::RecordDef *rec;
             if (clang::CXXRecordDecl const *cxxRecord = clang::dyn_cast<clang::CXXRecordDecl>(record)) {
-                auto cRecord = env.mutable_c_record();
+                auto cRecord = env.mutable_cxx_record();
                 rec = cRecord->mutable_base();
 
                 std::for_each(cxxRecord->bases_begin(), cxxRecord->bases_end(),
                               [&](clang::CXXBaseSpecifier const &base) {
-                                  mapper.ResolveType(*cRecord->add_parents(), base.getType());
+                                  auto cRecordParent = cRecord->add_parents();
+                                  cRecordParent->set_access(mapAccess(base.getAccessSpecifier()));
+                                  mapper.ResolveType(*cRecordParent->mutable_type(), base.getType());
                               });
             } else {
                 rec = env.mutable_record();
@@ -66,13 +68,14 @@ namespace ct {
         exportData([&](ct::proto::Envelope &env) {
             ct::proto::FunctionDef *func;
             if (clang::CXXMethodDecl const *method = clang::dyn_cast<clang::CXXMethodDecl>(function)) {
-                auto c_func = env.mutable_c_func();
+                auto c_func = env.mutable_cxx_func();
                 func = c_func->mutable_base();
 
                 mapper.ResolveType(*c_func->mutable_parent(),
                                    clang::QualType(method->getParent()->getTypeForDecl(), 0));
                 c_func->set_static_(method->isStatic());
                 c_func->set_virtual_(method->isVirtual());
+                c_func->set_access(mapAccess(method->getAccess()));
             } else {
                 func = env.mutable_func();
             }
@@ -96,10 +99,11 @@ namespace ct {
 
     void ProtoBufExport::MemberVariable(clang::FieldDecl const *field) {
         exportData([&](ct::proto::Envelope &env) {
-            auto c_var = env.mutable_c_var();
-            mapper.ResolveType(*c_var->mutable_parent(), clang::QualType(field->getParent()->getTypeForDecl(), 0));
+            auto c_field = env.mutable_field();
+            c_field->set_access(mapAccess(field->getAccess()));
+            mapper.ResolveType(*c_field->mutable_parent(), clang::QualType(field->getParent()->getTypeForDecl(), 0));
 
-            auto var = c_var->mutable_base();
+            auto var = c_field->mutable_base();
             mapper.ResolveName(*var->mutable_name(), *field);
             mapper.ResolveType(*var->mutable_own_type(), field->getType());
             var->set_kind(ct::proto::Var_VarKind_LOCAL);
@@ -218,6 +222,19 @@ namespace ct {
             auto input = env.mutable_input();
             input->set_file_path(file->getName());
         });
+    }
+
+    ct::proto::Access ProtoBufExport::mapAccess(clang::AccessSpecifier access) {
+        switch (access) {
+            case clang::AccessSpecifier::AS_public:
+                return ct::proto::Access::PUBLIC;
+            case clang::AccessSpecifier::AS_protected:
+                return ct::proto::Access::PROTECTED;
+            case clang::AccessSpecifier::AS_private:
+                return ct::proto::Access::PRIVATE;
+            case clang::AccessSpecifier::AS_none:
+                return ct::proto::Access::UNKNOWN;
+        }
     }
 
 }
