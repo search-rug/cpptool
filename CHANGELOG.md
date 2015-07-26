@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased][unreleased]
 ### Added
 - Parsing of extra elements regarding access type (i.e., private, public, protected)
+- Parsing of pure virtual methods, and extra field for their identification.
 
 ## 0.1.0 - 2015-07-25
 ### Added

@@ -40,7 +40,7 @@ namespace ct {
         if (clang::ParmVarDecl *param = clang::dyn_cast<clang::ParmVarDecl>(D)) {
             //Undefined functions still have their parameters traversed.
             clang::FunctionDecl *func = clang::dyn_cast<clang::FunctionDecl>(param->getDeclContext());
-            if (!func || !func->isDefined()) return true;
+            if (!func || !(func->isDefined() || func->isPure())) return true;
 
             out().ParameterVariable(param);
         } else if (D->isLocalVarDecl()) {
@@ -61,7 +61,7 @@ namespace ct {
     }
 
     bool PrimaryVisitor::VisitFunctionDecl(clang::FunctionDecl *D) {
-        if (!D->isDefined()) return true;
+        if (!D->isDefined() && !D->isPure()) return true;
 
         out().Function(D);
         return true;

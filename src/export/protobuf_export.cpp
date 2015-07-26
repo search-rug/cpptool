@@ -75,6 +75,7 @@ namespace ct {
                                    clang::QualType(method->getParent()->getTypeForDecl(), 0));
                 c_func->set_static_(method->isStatic());
                 c_func->set_virtual_(method->isVirtual());
+                c_func->set_pure_virtual(method->isPure());
                 c_func->set_access(mapAccess(method->getAccess()));
             } else {
                 func = env.mutable_func();
