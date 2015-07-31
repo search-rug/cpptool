@@ -107,7 +107,7 @@ namespace ct {
             auto var = c_field->mutable_base();
             mapper.ResolveName(*var->mutable_name(), *field);
             mapper.ResolveType(*var->mutable_own_type(), field->getType());
-            var->set_kind(ct::proto::Var_VarKind_LOCAL);
+            var->set_kind(ct::proto::Var_VarKind_CLASS);
         });
     }
 
